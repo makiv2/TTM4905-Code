@@ -13,7 +13,7 @@ Download postgres app from https://postgresapp.com/downloads.html and run the co
 - Open postgres.app
 - Click initialize
 
-In the djinja/settings directory create a file called .env. The .env file should be in the same directory as base.py and dev.py
+In the backend/settings directory create a file called .env. The .env file should be in the same directory as base.py and dev.py
 
 Add the data below to the .env file
 
