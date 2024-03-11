@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  db:
+    image: cimg/postgres:14.4-postgis
+    healthcheck:
+        test: pg_isready -U postgres
+        interval: 5s
+        timeout: 5s
+        retries: 5
+  app:
+    build: .
+    environment:
+      DB_USER: postgres
+      DB_NAME: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: db
+    healthcheck:
+      test: curl --fail http://127.0.0.1:8000/api/healthcheck || exit 1
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    expose:
+      - 8000
+    ports:
+      - "8000:8000"
