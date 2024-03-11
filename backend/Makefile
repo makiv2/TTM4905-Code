@@ -30,12 +30,12 @@ superuser:
 
 .PHONY: fmt
 fmt:
-	.venv/bin/black djinja foodarticles --exclude /migration
+	.venv/bin/black backend users --exclude /migration
 
 
 .PHONY: check-fmt
 check-fmt:
-	.venv/bin/black djinja foodarticles --check --exclude /migrations
+	.venv/bin/black backend users --check --exclude /migrations
 
 
 .PHONY: mypy

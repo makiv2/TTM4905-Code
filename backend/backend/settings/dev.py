@@ -14,7 +14,7 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 DEBUG = True
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-pned@!u8qc4vh2)f+_oveg1k$%h6t8kq2j37y5=w*$#jfd=sd%'
+SECRET_KEY = "django-insecure-pned@!u8qc4vh2)f+_oveg1k$%h6t8kq2j37y5=w*$#jfd=sd%"
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
