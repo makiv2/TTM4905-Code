@@ -3,8 +3,6 @@ FROM python:3.11
 WORKDIR /usr/src/app
 RUN python3 -m venv .venv
 
-RUN apt-get update &&\
- apt-get install -y libpcre3 libpcre3-dev
 RUN .venv/bin/pip install uwsgi --no-cache-dir
 RUN mkdir -p /var/log/uwsgi
 COPY uwsgi.ini /etc/uwsgi/sites/backend.ini
