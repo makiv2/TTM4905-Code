@@ -1,11 +1,35 @@
-#[macro_use] extern crate rocket;
+mod api;
+mod models;
+mod repository;
+
+
+#[macro_use] 
+extern crate rocket;
+
+use rocket::{get, http::Status, serde::json::Json};
+
 
 #[get("/")]
 fn index() -> &'static str {
     "Hello, world!"
 }
 
+
+#[get("/generate")]
+fn generate() -> Result<Json<String>, Status> {
+    Ok(Json(String::from("Hello from rust!")))
+}
+
+
+#[get("/verify")]
+fn verify() -> &'static str {
+    "Hello, world!"
+}
+
+
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index])
+    rocket::build()
+        .mount("/", routes![index, generate, verify])
 }
+
