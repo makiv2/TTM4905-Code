@@ -1,22 +1,18 @@
-//! A simple program to be proven inside the zkVM.
-
 #![no_main]
 sp1_zkvm::entrypoint!(main);
 
 pub fn main() {
-    // NOTE: values of n larger than 186 will overflow the u128 type,
-    // resulting in output that doesn't match fibonacci sequence.
-    // However, the resulting proof will still be valid!
-    let n = sp1_zkvm::io::read::<u32>();
-    let mut a: u128 = 0;
-    let mut b: u128 = 1;
-    let mut sum: u128;
-    for _ in 1..n {
-        sum = a + b;
-        a = b;
-        b = sum;
-    }
+    // Predefined credentials
+    let expected_username_hash = 123456789u128; // Example hash of "user123"
+    let expected_password_hash = 987654321u128; // Example hash of "pass123"
 
-    sp1_zkvm::io::write(&a);
-    sp1_zkvm::io::write(&b);
+    // Read username and password hashes from input
+    let username_hash = sp1_zkvm::io::read::<u128>();
+    let password_hash = sp1_zkvm::io::read::<u128>();
+
+    // Check if the provided credentials match the expected ones
+    let credentials_match = (username_hash == expected_username_hash) && (password_hash == expected_password_hash);
+
+    // Write the result
+    sp1_zkvm::io::write(&credentials_match);
 }
