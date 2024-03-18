@@ -14,3 +14,4 @@ pgo-data.profdata
 # Proofs
 **/proof-with-pis.json
 **/proof-with-io.json
+**/credentials_check_proof.json
