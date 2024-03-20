@@ -1,0 +1,12 @@
+use super::schema::users;
+use diesel::{prelude::*};
+use serde::{Serialize, Deserialize};
+
+#[derive(Queryable, Insertable, Serialize, Deserialize)]
+#[diesel(table_name = users)]
+pub struct Post {
+    pub id: i32,
+    pub username: String,
+    pub password: String,
+    pub message: String,
+}
