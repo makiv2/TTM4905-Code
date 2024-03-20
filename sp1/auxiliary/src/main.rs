@@ -1,11 +1,9 @@
 use reqwest::Error;
 use serde::Deserialize;
-use sp1_core::{SP1Prover, SP1Stdin, SP1Stdout};
-use std::fs;
+use sp1_core::{SP1Prover, SP1Stdin};
 
 #[derive(Deserialize, Debug)]
 struct User {
-    id: i32,
     username: String,
     password: String,
 }
@@ -23,26 +21,48 @@ async fn main() -> Result<(), Error> {
         .json::<Vec<User>>()
         .await?;
 
+    // Static expected user
+    let expected_username: String = "tred".to_string();
+    let expected_password: String = "bull".to_string();
+
+    // Dummy company name
+    let company_name: String = "Netcompany".to_string();
+
+    // Flag to track if a matching user is found
+    let mut user_found: bool = false;
+
     // Iterate through the fetched users and test each one with the prover program
     for user in response {
         // Generate input for the current user
         let mut stdin = SP1Stdin::new();
-        let username: String = user.username.clone();
-        let password: String = user.password.clone();
-        stdin.write(&username);
-        stdin.write(&password);
+        stdin.write(&expected_username);
+        stdin.write(&expected_password);
+        let test_username: String = user.username.clone();
+        let test_password: String = user.password.clone();
+        stdin.write(&test_username);
+        stdin.write(&test_password);
+        stdin.write(&company_name);
 
         // Execute the ELF binary with the input
         let mut stdout = SP1Prover::execute(ELF, stdin).expect("execution failed");
 
         // Read output from the execution
-        let credentials_match = stdout.read::<bool>();
+        let output = stdout.read::<String>();
 
-        if credentials_match {
+        // Parse the output string
+        let output: serde_json::Value = serde_json::from_str(&output).expect("failed to parse output");
+
+        // Check the value of the "match" field
+        if output["match"].as_bool().unwrap_or(false) {
             println!("Matching user found:");
-            println!("ID: {}, Username: {}, Password: {}", user.id, user.username, user.password);
+            println!("Username: {}, Password: {}", user.username, user.password);
+            println!("Company: {}", output["company"].as_str().unwrap_or(""));
+            user_found = true;
             break;
         }
+    }
+    if !user_found {
+        println!("No matching user found in the database.");
     }
 
     Ok(())

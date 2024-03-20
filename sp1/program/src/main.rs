@@ -2,21 +2,23 @@
 sp1_zkvm::entrypoint!(main);
 
 pub fn main() {
-    // Predefined credentials
-    // let expected_username_hash = 123456789u128; // Example hash of "user123"
-    // let expected_password_hash = 987654321u128; // Example hash of "pass123"
+    // Read the hashed username and password of the user we are looking for
+    let expected_username_hash = sp1_zkvm::io::read::<String>();
+    let expected_password_hash = sp1_zkvm::io::read::<String>();
 
-    // Dummy username test
-    let expected_username: String = "red".to_string();
-    let expected_password: String = "bull".to_string();
+    // Read the hashed username and password of the user we are testing against
+    let test_username_hash = sp1_zkvm::io::read::<String>();
+    let test_password_hash = sp1_zkvm::io::read::<String>();
 
-    // Read username and password hashes from input
-    let username_hash = sp1_zkvm::io::read::<String>();
-    let password_hash = sp1_zkvm::io::read::<String>();
+    // Read the company name the user belongs to
+    let company_name = sp1_zkvm::io::read::<String>();
 
     // Check if the provided credentials match the expected ones
-    let credentials_match = (username_hash == expected_username) && (password_hash == expected_password);
+    let credentials_match = (test_username_hash == expected_username_hash) && (test_password_hash == expected_password_hash);
+
+    // Create the output string
+    let output = format!("{{\"match\": {}, \"company\": \"{}\"}}", credentials_match, company_name);
 
     // Write the result
-    sp1_zkvm::io::write(&credentials_match);
+    sp1_zkvm::io::write(&output);
 }
