@@ -1,6 +1,7 @@
 mod api;
 mod models;
 mod repository;
+mod schema;
 
 
 #[macro_use] 
