@@ -1,6 +1,7 @@
 use reqwest::Error;
 use serde::Deserialize;
 use sp1_core::{SP1Prover, SP1Stdin};
+use std::env;
 
 #[derive(Deserialize, Debug)]
 struct User {
@@ -12,6 +13,19 @@ const ELF: &[u8] = include_bytes!("../../program/elf/riscv32im-succinct-zkvm-elf
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
+    // Get the command-line arguments
+    let args: Vec<String> = env::args().collect();
+
+    // Check if the required arguments are provided
+    if args.len() < 3 {
+        println!("Usage: {} <expected_username> <expected_password>", args[0]);
+        return Ok(());
+    }
+
+    // Extract the expected username and password from the command-line arguments
+    let expected_username: String = args[1].clone();
+    let expected_password: String = args[2].clone();
+
     // URL of the Django API endpoint for fetching users
     let url = "http://localhost:8000/api/users/";
 
@@ -21,9 +35,6 @@ async fn main() -> Result<(), Error> {
         .json::<Vec<User>>()
         .await?;
 
-    // Static expected user
-    let expected_username: String = "tred".to_string();
-    let expected_password: String = "bull".to_string();
 
     // Dummy company name
     let company_name: String = "Netcompany".to_string();
