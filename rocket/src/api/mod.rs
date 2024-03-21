@@ -4,6 +4,8 @@
 use crate::models::NewUser;
 use crate::models::User;
 
+use crate::services::UserService;
+
 use rocket::serde::json::Json;
 use rocket::response::{Debug, status::Created};
 use rocket::response::status::NoContent;
@@ -15,7 +17,7 @@ type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
 // Create
 #[post("/user", format = "json", data = "<user>")]
 pub async fn create_user(user: Json<NewUser>, user_service: UserService) -> Result<Created<Json<NewUser>>> {
-    let user = user_service.post_user(user.into_inner()).await;
+    let user = user_service.post_user(user).await;
     match user {
         Ok(user) => Ok(Created::new("/").body(Json(user))),
     }
