@@ -8,19 +8,19 @@ pub struct UserRepository {
     connection: PgConnection,
 }
 
+
 impl UserRepository {
     pub fn new() -> Self {
         let connection = establish_connection_pg();
         UserRepository { connection }
     }
 
-    pub async fn create_user(&mut self, user: User) -> Result<User, &'static str> {
+    pub async fn create_user(&mut self, user: User) -> User {
         diesel::insert_into(users)
             .values(&user)
             .execute(&mut self.connection)
-            .expect("Error creating new user");
-
-        return Ok(user);
+            .expect("Error saving new user");
+        user
     }
 
     pub async fn get_users(&mut self) -> Result<Vec<User>, &'static str> {
@@ -40,6 +40,10 @@ impl UserRepository {
             Ok(user) => Ok(user),
             Err(_) => Err("User not found"),
         }
+    }
+
+    pub(crate) async fn update_user(&self, p0: i32, p1: User) {
+        todo!()
     }
 
    // pub async fn update_user(&mut self, other_id: i32, updated_user: User) -> Result<User, &'static str> {
