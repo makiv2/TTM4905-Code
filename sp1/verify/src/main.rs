@@ -7,7 +7,7 @@ const ELF: &[u8] = include_bytes!("../../program/elf/riscv32im-succinct-zkvm-elf
 
 fn main() {
     // Read the proof from the JSON file.
-    let proof_json = fs::read_to_string("credentials_check_proof.json").expect("failed to read proof file");
+    let proof_json = fs::read_to_string("../auxiliary/credentials_check_proof.json").expect("failed to read proof file");
     let mut proof: SP1ProofOnlyOutput<BabyBearBlake3> =
         serde_json::from_str(&proof_json).expect("failed to deserialize proof");
 
@@ -15,8 +15,18 @@ fn main() {
     SP1Verifier::verify_only_output(ELF, &proof).expect("verification failed");
 
     // Read the output from the proof.
-    let credentials_match = proof.stdout.read::<bool>();
+    let output_str = proof.stdout.read::<String>();
+
+    // Parse the output string
+    let output: serde_json::Value = serde_json::from_str(&output_str).expect("failed to parse output");
+
+    // Extract the relevant fields from the output
+    let credentials_match = output["match"].as_bool().unwrap_or(false);
+    let company = output["company"].as_str().unwrap_or("");
+
+    // Print the extracted information
     println!("Credentials match: {}", credentials_match);
+    println!("Company: {}", company);
 
     println!("Successfully verified the proof for the credentials check program!");
 }
