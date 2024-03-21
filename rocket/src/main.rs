@@ -4,6 +4,7 @@ mod repository;
 mod schema;
 mod services;
 
+
 #[macro_use]
 extern crate rocket;
 
@@ -32,6 +33,6 @@ fn verify() -> &'static str {
 fn rocket() -> _ {
     rocket::build()
         .mount("/", routes![index, generate, verify])
-        .mount("/", routes![repository::create_user, repository::get_users])
+        .mount("/", routes![api::create_user, api::get_users])
 }
 
