@@ -1,52 +1,71 @@
-extern crate diesel;
-extern crate rocket;
-
+use std::env;
 use diesel::prelude::*;
 use dotenvy::dotenv;
-use rocket::response::{status::Created, Debug};
-use rocket::serde::{json::Json, Deserialize, Serialize};
-use rocket::{get, post};
-use crate::models;
-use crate::models::NewUser;
-use crate::schema;
-use std::env;
+use crate::models::{User};
+use crate::schema::users::dsl::*;
 
-pub fn establish_connection_pg() -> PgConnection {
+pub struct UserRepository {
+    connection: PgConnection,
+}
+
+impl UserRepository {
+    pub fn new() -> Self {
+        let connection = establish_connection_pg();
+        UserRepository { connection }
+    }
+
+    pub async fn create_user(&mut self, user: User) -> Result<User, &'static str> {
+        diesel::insert_into(users)
+            .values(&user)
+            .execute(&mut self.connection)
+            .expect("Error creating new user");
+
+        return Ok(user);
+    }
+
+    pub async fn get_users(&mut self) -> Result<Vec<User>, &'static str> {
+
+        let results = users
+            .limit(5)
+            .load::<User>(&mut self.connection)
+            .expect("Error loading users");
+
+        return Ok(results);
+    }
+
+    pub async fn get_user(&mut self, user_id: i32) -> Result<User, &'static str> {
+        let result = users.find(user_id).first::<User>(&mut self.connection);
+
+        match result {
+            Ok(user) => Ok(user),
+            Err(_) => Err("User not found"),
+        }
+    }
+
+   // pub async fn update_user(&mut self, other_id: i32, updated_user: User) -> Result<User, &'static str> {
+   //     let result = diesel::update(users.find(id))
+   //         .set(&updated_user)
+   //         .get_result(&mut self.connection);
+
+   //     match result {
+   //         Ok(user) => Ok(user),
+   //         Err(_) => Err("Failed to update user"),
+   //     }
+   // }
+
+    pub async fn delete_user(&mut self, user_id: i32) -> Result<(), &'static str> {
+        let result = diesel::delete(users.find(user_id)).execute(&mut self.connection);
+
+        match result {
+            Ok(_) => Ok(()),
+            Err(_) => Err("Failed to delete user"),
+        }
+    }
+}
+
+fn establish_connection_pg() -> PgConnection {
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     PgConnection::establish(&database_url)
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
-}
-
-type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
-
-// TODO: Move first part to api/mod.rs
-#[post("/user", format = "json", data = "<user>")]
-pub fn create_user(user: Json<NewUser>) -> Result<Created<Json<NewUser>>> {
-    use models::User;
-    let connection = &mut establish_connection_pg();
-
-    let new_user = User {
-        id: 1,
-        username: user.username.to_string(),
-        password: user.password.to_string(),
-        message: user.message.to_string(),
-    };
-
-    diesel::insert_into(self::schema::users::dsl::users)
-        .values(&new_user)
-        .execute(connection)
-        .expect("Error saving new post");
-    Ok(Created::new("/").body(user))
-}
-
-#[get("/users")]
-pub fn get_users() -> Result<Json<Vec<models::User>>> {
-    use schema::users::dsl::*;
-    let connection = &mut establish_connection_pg();
-    let results = users
-        .limit(5)
-        .load::<models::User>(connection)
-        .expect("Error loading posts");
-    Ok(Json(results))
 }
