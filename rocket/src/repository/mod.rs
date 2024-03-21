@@ -7,6 +7,7 @@ use rocket::response::{status::Created, Debug};
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use rocket::{get, post};
 use crate::models;
+use crate::models::NewUser;
 use crate::schema;
 use std::env;
 
@@ -15,13 +16,6 @@ pub fn establish_connection_pg() -> PgConnection {
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     PgConnection::establish(&database_url)
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct NewUser {
-    username: String,
-    password: String,
-    message: String,
 }
 
 type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
