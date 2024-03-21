@@ -10,3 +10,10 @@ pub struct User {
     pub password: String,
     pub message: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct NewUser {
+    username: String,
+    password: String,
+    message: String,
+}
