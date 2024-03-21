@@ -1,5 +1,7 @@
+use argon2::{self, Config};
 use reqwest::Error;
 use serde::Deserialize;
+use sha2::{Digest, Sha512};
 use sp1_core::{SP1Prover, SP1Stdin};
 use std::env;
 
@@ -26,15 +28,24 @@ async fn main() -> Result<(), Error> {
     let expected_username: String = args[1].clone();
     let expected_password: String = args[2].clone();
 
+    // Hash the expected username using SHA-512
+    let mut hasher = Sha512::new();
+    hasher.update(expected_username.as_bytes());
+    let expected_username_hash: String = format!("{:x}", hasher.finalize());
+
+    // Hash the expected password using Argon2 with a salt
+    let config: Config<'_> = Config::default();
+    let salt: &[u8; 16] = b"some_random_salt";
+    let expected_password_hash: String = argon2::hash_encoded(expected_password.as_bytes(), salt, &config).unwrap();
+
     // URL of the Django API endpoint for fetching users
     let url = "http://localhost:8000/api/users/";
 
     // Send a GET request to the API endpoint
-    let response = reqwest::get(url)
+    let response: Vec<User> = reqwest::get(url)
         .await?
         .json::<Vec<User>>()
         .await?;
-
 
     // Dummy company name
     let company_name: String = "Netcompany".to_string();
@@ -44,21 +55,27 @@ async fn main() -> Result<(), Error> {
 
     // Iterate through the fetched users and test each one with the prover program
     for user in response {
+        // Hash the test username using SHA-512
+        let mut hasher = Sha512::new();
+        hasher.update(user.username.as_bytes());
+        let test_username_hash: String = format!("{:x}", hasher.finalize());
+
+        // Hash the test password using Argon2 with the same salt
+        let test_password_hash: String = argon2::hash_encoded(user.password.as_bytes(), salt, &config).unwrap();
+
         // Generate input for the current user
-        let mut stdin = SP1Stdin::new();
-        stdin.write(&expected_username);
-        stdin.write(&expected_password);
-        let test_username: String = user.username.clone();
-        let test_password: String = user.password.clone();
-        stdin.write(&test_username);
-        stdin.write(&test_password);
+        let mut stdin: SP1Stdin = SP1Stdin::new();
+        stdin.write(&expected_username_hash);
+        stdin.write(&expected_password_hash);
+        stdin.write(&test_username_hash);
+        stdin.write(&test_password_hash);
         stdin.write(&company_name);
 
         // Execute the ELF binary with the input
-        let mut stdout = SP1Prover::execute(ELF, stdin).expect("execution failed");
+        let mut stdout: sp1_core::SP1Stdout = SP1Prover::execute(ELF, stdin).expect("execution failed");
 
         // Read output from the execution
-        let output = stdout.read::<String>();
+        let output: String = stdout.read::<String>();
 
         // Parse the output string
         let output: serde_json::Value = serde_json::from_str(&output).expect("failed to parse output");
@@ -69,9 +86,26 @@ async fn main() -> Result<(), Error> {
             println!("Username: {}, Password: {}", user.username, user.password);
             println!("Company: {}", output["company"].as_str().unwrap_or(""));
             user_found = true;
+
+            // If user is found, generate the proof, start by creating new stdin
+            let mut new_stdin = SP1Stdin::new(); // Create a new instance of SP1Stdi
+
+            // Populate it
+            new_stdin.write(&expected_username_hash);
+            new_stdin.write(&expected_password_hash);
+            new_stdin.write(&test_username_hash);
+            new_stdin.write(&test_password_hash);
+            new_stdin.write(&company_name);
+
+            let proof = SP1Prover::prove_only_output(ELF, new_stdin).expect("proving failed"); // Use the new instance of SP1Stdin
+            let proof_filename = format!("credentials_check_proof.json");
+            proof.save(&proof_filename).expect("saving proof failed");
+
+            // Exit program after proof is generated
             break;
         }
     }
+
     if !user_found {
         println!("No matching user found in the database.");
     }
