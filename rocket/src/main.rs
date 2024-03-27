@@ -17,22 +17,11 @@ fn index() -> &'static str {
 }
 
 
-#[get("/generate")]
-fn generate() -> Result<Json<String>, Status> {
-    Ok(Json(String::from("Hello from rust!")))
-}
-
-
-#[get("/verify")]
-fn verify() -> &'static str {
-    "Hello, world!"
-}
-
-
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount("/", routes![index, generate, verify])
-        .mount("/", routes![api::create_user, api::get_users])
+        .mount("/", routes![index])
+        .mount("/", routes![api::create_user, api::get_users, api::get_user, api::delete_user,
+                            api::generate, api::verify])
 }
 
