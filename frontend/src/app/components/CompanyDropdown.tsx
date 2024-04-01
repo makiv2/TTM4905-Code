@@ -1,5 +1,6 @@
 import React from "react";
 import Select, { components } from "react-select";
+import Image from "next/image";
 
 interface Company {
   name: string;
@@ -46,10 +47,11 @@ const CompanyDropdown: React.FC<Props> = ({
   const CustomOption: React.FC<any> = (props) => (
     <components.Option {...props}>
       <div style={{ display: "flex", alignItems: "center" }}>
-        <img
+        <Image
           src={props.data.logo}
           alt={props.data.name}
-          style={{ width: 20, height: 20, marginRight: 10 }}
+          width={20}
+          height={20}
         />
         {props.data.name}
       </div>
@@ -59,10 +61,11 @@ const CompanyDropdown: React.FC<Props> = ({
   const CustomSingleValue: React.FC<any> = ({ children, ...props }) => (
     <components.SingleValue {...props}>
       <div style={{ display: "flex", alignItems: "center" }}>
-        <img
+        <Image
           src={props.data.logo}
           alt={props.data.name}
-          style={{ width: 20, height: 20, marginRight: 10 }}
+          width={20}
+          height={20}
         />
         {children}
       </div>
