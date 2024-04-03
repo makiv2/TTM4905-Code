@@ -1,3 +1,4 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
   title: "ZKVM Whistleblowing System",
   description: "System using SP1 ZKVM for whistleblowing",
   icons: {
-    icon: "logos/favicon.ico",
+    icon: "/logos/favicon.ico", // Use an absolute path for the favicon
   },
 };
 
@@ -19,7 +20,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <head>
+        <link rel="icon" href={metadata.icons?.icon} />{" "}
+        {/* Optional chaining */}
+      </head>
+      <body>{children}</body>
     </html>
   );
 }
