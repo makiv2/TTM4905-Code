@@ -1,3 +1,6 @@
+mod user_repository;
+mod zk_repository;
+
 use std::env;
 use diesel::prelude::*;
 use dotenvy::dotenv;
