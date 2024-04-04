@@ -15,6 +15,7 @@ use crate::repository::UserRepository;
 // Types
 type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
 
+
 // CRUD Api Endpoints
 // Create
 #[post("/user", format = "json", data = "<user>")]
