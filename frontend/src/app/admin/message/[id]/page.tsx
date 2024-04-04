@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 const messages = [
   {
@@ -52,6 +53,19 @@ export default function MessageDetailsPage({
                 </span>
               </div>
               <div className="mb-4">
+                <span className="font-bold text-gray-700">Company:</span>
+                <div className="flex items-center">
+                  <Image
+                    src={message.company.logo}
+                    alt={message.company.name}
+                    width={20}
+                    height={20}
+                    className="w-6 h-6 mr-2"
+                  />
+                  <span className="text-gray-600">{message.company.name}</span>
+                </div>
+              </div>
+              <div className="mb-4">
                 <span className="font-bold text-gray-700">Message:</span>{" "}
                 <span className="text-gray-600">{message.message}</span>
               </div>
@@ -61,19 +75,11 @@ export default function MessageDetailsPage({
                   {message.files.map((file, index) => (
                     <li key={index}>{file}</li>
                   ))}
-                  <li>proof.json</li>
                 </ul>
               </div>
               <div className="mb-4">
-                <span className="font-bold text-gray-700">Company:</span>
-                <div className="flex items-center">
-                  <img
-                    src={message.company.logo}
-                    alt={message.company.name}
-                    className="w-6 h-6 mr-2"
-                  />
-                  <span className="text-gray-600">{message.company.name}</span>
-                </div>
+                <span className="font-bold text-gray-700">Proof:</span>{" "}
+                <span className="text-gray-600">proof.json</span>
               </div>
             </div>
             <Link href="/admin/dashboard">

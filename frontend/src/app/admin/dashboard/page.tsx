@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const messages = [
   {
@@ -21,7 +22,7 @@ export default function AdminDashboardPage() {
     <div className="flex justify-center items-center min-h-screen bg-gray-200">
       <div className="container mx-auto py-8">
         <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center">
-          Admin Dashboard
+          Whistleblowing Portal
         </h1>
         <div className="flex justify-center">
           <div className="overflow-x-auto">
@@ -58,9 +59,11 @@ export default function AdminDashboardPage() {
                     </td>
                     <td className="py-4 px-6 border-b border-gray-200 text-black">
                       <div className="flex items-center">
-                        <img
+                        <Image
                           src={message.company.logo}
                           alt={message.company.name}
+                          width={20}
+                          height={20}
                           className="w-6 h-6 mr-2 rounded-full"
                         />
                         <span className="text-sm text-gray-800">
