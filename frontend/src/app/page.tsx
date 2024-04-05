@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import CompanyDropdown from "./components/CompanyDropdown"; // Adjust the path as needed
+import { sha512 } from "js-sha512";
 
 const companies = [
   { name: "Statoil", logo: "/logos/statoil.png" },
@@ -23,6 +24,8 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
+      const hashedUsername = sha512(email);
+      console.log(hashedUsername);
       const response = await fetch("/api/login", {
         method: "POST",
         headers: {
@@ -30,7 +33,7 @@ export default function LoginPage() {
         },
         body: JSON.stringify({
           company: selectedCompany.name,
-          email,
+          hashedUsername,
           password,
         }),
       });
