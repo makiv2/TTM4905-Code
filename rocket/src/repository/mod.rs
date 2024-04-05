@@ -11,6 +11,9 @@ pub struct UserRepository {
     connection: PgConnection,
 }
 
+pub struct ZkRepository {
+    connection: PgConnection,
+}
 
 fn establish_connection_pg() -> PgConnection {
     dotenv().ok();
