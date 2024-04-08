@@ -1,20 +1,9 @@
-[development]
-address = "localhost"
-port = 8000
-workers = 2
-keep_alive = 5
-read_timeout = 5
-write_timeout = 5
-log = "normal"
-limits = { forms = 32768 }
-
-
-[production]
+## defaults for _all_ profiles
+[default]
 address = "0.0.0.0"
+limits = { form = "64 kB", json = "1 MiB" }
+
+
+[release]
 port = 6666
-workers = 2
-keep_alive = 10
-read_timeout = 5
-write_timeout = 5
-log = "critical"
-limits = { forms = 32768 }
+ip_header = false
