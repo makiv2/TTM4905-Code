@@ -1,5 +1,5 @@
-mod user_api;
-mod zk_api;
+pub mod user_api;
+pub mod zk_api;
 
 use rocket::http::Status;
 use crate::models::NewUser;

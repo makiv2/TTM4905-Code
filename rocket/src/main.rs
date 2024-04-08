@@ -23,7 +23,7 @@ fn rocket() -> _ {
 
     rocket::build()
         .mount("/", routes![index])
-        .mount("/", routes![api::create_user, api::get_users, api::get_user, api::delete_user,
-                            api::generate, api::verify])
+        .mount("/", routes![api::user_api::create_user, api::user_api::get_users, api::user_api::get_user, api::user_api::delete_user,
+                            api::zk_api::generate_proof, api::zk_api::get_proofs, api::zk_api::get_proof, api::zk_api::verify])
         // .manage(user_service)
 }
