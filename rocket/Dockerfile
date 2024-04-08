@@ -7,6 +7,6 @@ WORKDIR /app
 COPY . .
 
 RUN rustup default nightly
-RUN cargo build
+RUN cargo build --release
 
 CMD ["cargo", "run"]
