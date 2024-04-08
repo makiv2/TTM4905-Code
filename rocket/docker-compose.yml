@@ -16,6 +16,7 @@ services:
       DB_NAME: postgres
       DB_PASSWORD: postgres
       DB_HOST: db
+      ROCKET_ENV: production
     healthcheck:
       test: curl --fail http://127.0.0.1:6666/health || exit 1
       interval: 20s

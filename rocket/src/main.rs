@@ -25,10 +25,5 @@ fn rocket() -> _ {
         .mount("/", routes![index, api::health])
         .mount("/", routes![api::user_api::create_user, api::user_api::get_users, api::user_api::get_user, api::user_api::delete_user,
                             api::zk_api::generate_proof, api::zk_api::get_proofs, api::zk_api::get_proof, api::zk_api::verify])
-        .configure(|rocket| {
-            rocket
-                .port(6666)
-                .address("0.0.0.0")
-        })
         // .manage(user_service)
 }
