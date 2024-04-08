@@ -1,5 +1,8 @@
 // Write get and post routes for the user model
 
+mod user_api;
+mod zk_api;
+
 use rocket::http::Status;
 // Imports
 use crate::models::NewUser;
