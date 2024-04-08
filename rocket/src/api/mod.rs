@@ -1,19 +1,15 @@
-// Write get and post routes for the user model
-
 mod user_api;
 mod zk_api;
 
 use rocket::http::Status;
-// Imports
 use crate::models::NewUser;
 use crate::models::User;
-
 use crate::services::UserService;
+use crate::repository::UserRepository;
 
 use rocket::serde::json::Json;
 use rocket::response::{Debug, status::{Created, BadRequest}};
 use rocket::response::status::NoContent;
-use crate::repository::UserRepository;
 
 // Types
 type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
@@ -68,16 +64,4 @@ pub async fn delete_user(id: i32) -> Result<NoContent, &'static str> {
         Ok(_) => Ok(NoContent),
         Err(_) => Err("Failed to delete user"),
     }
-}
-
-
-#[get("/generate")]
-pub(crate) fn generate() -> std::result::Result<Json<String>, Status> {
-    Ok(Json(String::from("Hello from rust!")))
-}
-
-
-#[get("/verify")]
-pub(crate) fn verify() -> &'static str {
-    "Hello, world!"
 }
