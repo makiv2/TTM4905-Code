@@ -37,10 +37,6 @@ impl UserRepository {
         }
     }
 
-    pub(crate) async fn update_user(&self, p0: i32, p1: User) {
-        todo!()
-    }
-
     // pub async fn update_user(&mut self, other_id: i32, updated_user: User) -> Result<User, &'static str> {
     //     let result = diesel::update(users.find(id))
     //         .set(&updated_user)
