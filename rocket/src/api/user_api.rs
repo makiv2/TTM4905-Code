@@ -34,6 +34,7 @@ pub(crate) async fn get_users() -> crate::api::Result<Json<Vec<User>>, Status> {
 // Read
 #[get("/users/<id>")]
 pub(crate) async fn get_user(id: i32) -> crate::api::Result<Json<User>, Status> {
+    
     let mut user_service = UserService::new(UserRepository::new());
 
     let user = user_service.get_user(id).await;
