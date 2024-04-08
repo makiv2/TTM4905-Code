@@ -1,8 +1,7 @@
 FROM rust:latest
 LABEL authors="maki"
 
-ENV ROCKET_ADDRESS=0.0.0.0
-ENV ROCKET_PORT=6666
+ENV ROCKET_ENV = production
 
 WORKDIR /app
 COPY . .
