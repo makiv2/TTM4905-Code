@@ -9,7 +9,7 @@ impl UserService {
     }
 
     pub async fn post_user(&mut self, new_user: Json<NewUser>) -> User {
-        // Her kan vi har mer logic før vi sender til repository (database) 
+        // Her kan vi har mer logic før vi sender til repository (database)
         let user = User {
             id: 1,
             username: new_user.username.to_string(),
@@ -23,25 +23,25 @@ impl UserService {
     }
 
     pub async fn get_users(&mut self) -> Result<Vec<User>, &'static str> {
-        // Her kan vi har mer logic før vi sender til repository (database) 
+        // Her kan vi har mer logic før vi sender til repository (database)
 
         return self.user_repository.get_users().await
     }
 
     pub async fn get_user(&mut self, id: i32) -> Result<User, &'static str> {
-        // Her kan vi har mer logic før vi sender til repository (database) 
+        // Her kan vi har mer logic før vi sender til repository (database)
 
         return self.user_repository.get_user(id).await
     }
 
     // pub async fn update_user(&mut self, id: i32, updated_user: User) -> Result<User, &'static str> {
-    //     // Her kan vi har mer logic før vi sender til repository (database) 
-    //     
+    //     // Her kan vi har mer logic før vi sender til repository (database)
+    //
     //     return self.user_repository.update_user(id, updated_user).await
     // }
 
     pub async fn delete_user(&mut self, id: i32) -> Result<(), &'static str> {
-        // Her kan vi har mer logic før vi sender til repository (database) 
+        // Her kan vi har mer logic før vi sender til repository (database)
 
         return self.user_repository.delete_user(id).await
     }

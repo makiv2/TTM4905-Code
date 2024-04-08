@@ -10,7 +10,7 @@ impl ZkRepository {
         ZkRepository{ connection }
     }
 
-    pub async fn store_proof(&mut self, proof: Proof) -> Proof {
+    pub async fn save_proof(&mut self, proof: Proof) -> Proof {
         diesel::insert_into(proofs)
             .values(&proof)
             .execute(&mut self.connection)
