@@ -5,5 +5,5 @@ limits = { form = "64 kB", json = "1 MiB" }
 
 
 [release]
-port = 6666
+port = 9999
 ip_header = false

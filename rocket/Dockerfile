@@ -9,4 +9,4 @@ COPY . .
 RUN rustup default nightly
 RUN cargo build --release
 
-CMD ["cargo", "run"]
+CMD ["cargo", "run", "--release"]

@@ -2,20 +2,26 @@ version: "3"
 
 services:
   db:
-    image: cimg/postgres:14.4-postgis
+    image: postgres
     healthcheck:
       test: pg_isready -U postgres
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: rocketpassword
+      POSTGRES_USER: postgres
+      POSTGRES_DB: rocketdb
 
   app:
     build: .
     environment:
-      DB_USER: postgres
-      DB_NAME: postgres
-      DB_PASSWORD: postgres
-      DB_HOST: db
+      DATABASE_URL: postgres://postgres:rocketpassword@localhost/rocketdb
+      DB_USER: changeToEnv
+      DB_NAME: changeToEnv
+      DB_PASSWORD: changeToEnv
+      DB_HOST: changeToEnv
       ROCKET_ENV: production
     healthcheck:
       test: curl --fail http://127.0.0.1:6666/health || exit 1
@@ -28,6 +34,6 @@ services:
         condition: service_healthy
 
     expose:
-      - 6666
+      - 9999
     ports:
-      - "6666:6666"
+      - "9999:9999"
