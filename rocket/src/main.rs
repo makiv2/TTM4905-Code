@@ -7,12 +7,45 @@ mod services;
 #[macro_use]
 extern crate rocket;
 
-use rocket::{get};
+use rocket::{get, post};
+use rocket::serde::json::Json;
+use serde::Deserialize;
+use tokio::process::Command;
+#[derive(Deserialize)]
+struct Credentials {
+    username: String,
+    password: String,
+}
 
 #[get("/")]
 fn index() -> &'static str {
-    "Hello, world!"
+    "Real shit, world!"
 }
+
+#[post("/check_credentials", data = "<credentials>")]
+async fn check_credentials(credentials: Json<Credentials>) -> String {
+    let username = &credentials.username;
+    let password = &credentials.password;
+
+    // Run the script executable
+    let output = Command::new("../sp1/auxiliary/target/release/auxiliary")
+        .arg(username)
+        .arg(password)
+        .output()
+        .await
+        .expect("failed to execute script");
+
+    // Check if the execution was successful
+    if output.status.success() {
+        // Get the proof content from the script output
+        let proof_content = String::from_utf8_lossy(&output.stdout);
+        proof_content.to_string()
+    } else {
+        // Return an error response if the execution failed
+        String::from("Error: Failed to execute the credentials check")
+    }
+}
+
 
 #[launch]
 fn rocket() -> _ {
@@ -22,7 +55,7 @@ fn rocket() -> _ {
     // let user_service = services::UserService::new(user_repository);
 
     rocket::build()
-        .mount("/", routes![index, api::health])
+        .mount("/", routes![index, check_credentials, api::health])
         .mount("/", routes![api::user_api::create_user, api::user_api::get_users, api::user_api::get_user, api::user_api::delete_user,
                             api::zk_api::generate_proof, api::zk_api::get_proofs, api::zk_api::get_proof, api::zk_api::verify])
         // .manage(user_service)
