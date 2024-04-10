@@ -17,7 +17,9 @@ services:
       - "5432:5432"
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.rocket
     environment:
       DATABASE_URL: postgres://rocketuser:password@rocketdb/rocketdb
       ROCKET_ENV: production

@@ -4,7 +4,9 @@ LABEL authors="maki"
 ENV ROCKET_ENV = production
 
 WORKDIR /app
-COPY . .
+COPY rocket/. .
+RUN mkdir /sp1
+COPY sp1/. /sp1
 
 RUN rustup default nightly
 RUN cargo build --release

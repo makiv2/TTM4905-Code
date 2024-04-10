@@ -2,7 +2,6 @@
 
 
 # Just in case to make sure the rocket backend does not mess with sp1
-mkdir /sp1
 cd /sp1
 
 # Install sp1
