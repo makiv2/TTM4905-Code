@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  rocketdb:
+  rocket-db:
     image: postgres
     healthcheck:
       test: pg_isready -U rocketuser -d rocketdb
@@ -16,24 +16,53 @@ services:
     ports:
       - "5432:5432"
 
-  app:
+  rocket-backend:
     build:
       context: .
       dockerfile: Dockerfile.rocket
     environment:
-      DATABASE_URL: postgres://rocketuser:password@rocketdb/rocketdb
+      DATABASE_URL: postgres://rocketuser:password@rocket-db/rocketdb
       ROCKET_ENV: production
     healthcheck:
       test: curl --fail http://127.0.0.1:6666/health || exit 1
       interval: 20s
       timeout: 5s
       retries: 5
-
     depends_on:
-      rocketdb:
+      rocket-db:
         condition: service_healthy
-
     expose:
       - 9999
     ports:
       - "9999:9999"
+
+
+  django-db:
+    image: cimg/postgres:14.4-postgis
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  django-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.django
+    environment:
+      DB_USER: postgres
+      DB_NAME: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: django-db
+    healthcheck:
+      test: curl --fail http://127.0.0.1:8000/api/healthcheck || exit 1
+      interval: 20s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      django-db:
+        condition: service_healthy
+    expose:
+      - 8000
+    ports:
+      - "8000:8000"
