@@ -3,8 +3,10 @@ import os
 
 from .base import *
 
+# TODO REMOVE ALLOWED HOSTS 0.0.0.0
 ALLOWED_HOSTS = [
     "127.0.0.1",
+    "django-backend"
 ]
 
 # SECURITY WARNING: don't run with debug turned on in production!

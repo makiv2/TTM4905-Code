@@ -7,7 +7,7 @@ try:
 except ImportError:
     pass
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "django-backend"]
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
