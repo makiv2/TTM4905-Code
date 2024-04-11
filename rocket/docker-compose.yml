@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  rocketdb:
+    image: postgres
+    healthcheck:
+      test: pg_isready -U rocketuser -d rocketdb
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: rocketuser
+      POSTGRES_DB: rocketdb
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgres://rocketuser:password@rocketdb/rocketdb
+      ROCKET_ENV: production
+    healthcheck:
+      test: curl --fail http://127.0.0.1:6666/health || exit 1
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+    depends_on:
+      rocketdb:
+        condition: service_healthy
+
+    expose:
+      - 9999
+    ports:
+      - "9999:9999"
