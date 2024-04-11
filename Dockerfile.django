@@ -1,18 +1,19 @@
 FROM python:3.11
+LABEL authors="maki"
 
 WORKDIR /usr/src/app
 RUN python3 -m venv .venv
 
 RUN .venv/bin/pip install uwsgi --no-cache-dir
 RUN mkdir -p /var/log/uwsgi
-COPY backend/uwsgi.ini /etc/uwsgi/sites/backend.ini
+COPY backend/backend/uwsgi.ini /etc/uwsgi/sites/backend.ini
 
 RUN mkdir -p /usr/src/app
 
-COPY backend/requirements.txt /usr/src/app/
+COPY backend/backend/requirements.txt /usr/src/app/
 RUN .venv/bin/pip install -r requirements.txt --no-cache-dir
 
-COPY backend /usr/src/app
+COPY backend/backend /usr/src/app
 RUN chmod +x /usr/src/app/run.sh
 
 EXPOSE 8000
