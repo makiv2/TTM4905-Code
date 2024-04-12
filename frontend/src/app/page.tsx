@@ -34,7 +34,7 @@ export default function LoginPage() {
         },
         body: JSON.stringify({
           company: selectedCompany.name,
-          hashedUsername,
+          username: hashedUsername,
           password,
         }),
       });
@@ -44,7 +44,7 @@ export default function LoginPage() {
       } else {
         // Handle login error
         console.error("Login failed");
-        router.push("/dashboard");
+        router.push("/");
       }
     } catch (error) {
       console.error("Error:", error);
