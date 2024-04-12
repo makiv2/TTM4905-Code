@@ -23,6 +23,7 @@ services:
     environment:
       DATABASE_URL: postgres://rocketuser:password@rocket-db/rocketdb
       ROCKET_ENV: production
+      DJANGO_HOST: http://django-backend:8000
     healthcheck:
       test: curl --fail http://127.0.0.1:6666/health || exit 1
       interval: 20s
