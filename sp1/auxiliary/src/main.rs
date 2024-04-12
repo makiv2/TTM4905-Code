@@ -39,10 +39,20 @@ async fn main() -> Result<(), Error> {
     let expected_password_hash: String = argon2::hash_encoded(expected_password.as_bytes(), salt, &config).unwrap();
 
     // URL of the Django API endpoint for fetching users
-    let url = "http://localhost:8000/api/users/";
+    // Locally let url = "http://localhost:8000/api/users/";
+    // DJANGO_HOST should be http://localhost:8000 locally or http://django-backend:8000 in the container
+
+    let url: String;
+
+    if let Ok(django_host) = env::var("DJANGO_HOST") {
+        url = format!("{}/api/users/", django_host);
+    } else {
+        println!("DJANGO_HOST environment variable is not set.");
+        return Ok(());
+    }
 
     // Send a GET request to the API endpoint
-    let response: Vec<User> = reqwest::get(url)
+    let response: Vec<User> = reqwest::get(&url)
         .await?
         .json::<Vec<User>>()
         .await?;
