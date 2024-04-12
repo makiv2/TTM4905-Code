@@ -15,6 +15,7 @@ use rocket_cors::{AllowedOrigins, CorsOptions};
 
 #[derive(Deserialize)]
 struct Credentials {
+    company: String,
     username: String,
     password: String,
 }
