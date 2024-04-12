@@ -26,7 +26,8 @@ export default function LoginPage() {
     try {
       const hashedUsername = sha512(email);
       console.log(hashedUsername);
-      const response = await fetch("/api/login", {
+
+      const response = await fetch("http://0.0.0.0:9999/check_credentials", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

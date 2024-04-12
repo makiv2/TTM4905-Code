@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="logos/favicon.ico" /> {/* Optional chaining */}
+        <link rel="icon" href="/logos/favicon.ico" /> {/* Optional chaining */}
       </head>
       <body>{children}</body>
     </html>
