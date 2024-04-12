@@ -43,6 +43,13 @@ async fn check_credentials(credentials: Json<Credentials>) -> String {
         .expect("failed to execute script");
 
     // Check if the execution was successful
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    println!("This is the stdout {}", stdout);
+
+    // Check if the execution was successful
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    println!("This is the stderr {}", stderr);
+
     if output.status.success() {
         // Get the proof content from the script output
         let proof_content = String::from_utf8_lossy(&output.stdout);
