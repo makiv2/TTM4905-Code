@@ -15,7 +15,7 @@ use rocket_cors::{AllowedOrigins, CorsOptions};
 
 #[derive(Deserialize)]
 struct Credentials {
-    company: String,
+    company: String, // Dead code, but probably should be used somewhere?
     username: String,
     password: String,
 }
@@ -31,7 +31,11 @@ async fn check_credentials(credentials: Json<Credentials>) -> String {
     let password = &credentials.password;
 
     // Run the script executable
-    let output = Command::new("../sp1/auxiliary/target/release/auxiliary")
+    let output = Command::new("cargo")
+        .arg("run")
+        .arg("--release")
+        .arg("--manifest-path")
+        .arg("/sp1/auxiliary/Cargo.toml")
         .arg(username)
         .arg(password)
         .output()
