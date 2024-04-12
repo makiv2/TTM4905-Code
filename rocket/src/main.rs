@@ -31,11 +31,7 @@ async fn check_credentials(credentials: Json<Credentials>) -> String {
     let password = &credentials.password;
 
     // Run the script executable
-    let output = Command::new("cargo")
-        .arg("run")
-        .arg("--release")
-        .arg("--manifest-path")
-        .arg("/sp1/auxiliary/Cargo.toml")
+    let output = Command::new("/sp1/auxiliary/target/release/auxiliary")
         .arg(username)
         .arg(password)
         .output()
