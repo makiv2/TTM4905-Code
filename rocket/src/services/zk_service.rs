@@ -1,5 +1,5 @@
 use rocket::serde::json::Json;
-use crate::models::{NewProof, Proof};
+use crate::models::{NewProof, Proof, ProofQueryResult};
 use crate::repository::ZkRepository;
 use crate::services::ZkService;
 
@@ -13,7 +13,7 @@ impl ZkService {
         // GENERERE PROOF HER MED ZK
         
         let proof = Proof {
-            id: 1,
+            id: None,
             proof: new_proof.proof.to_string(),
             company: new_proof.company.to_string(),
             message: new_proof.message.to_string(),
@@ -24,13 +24,13 @@ impl ZkService {
         return created_proof;
     }
 
-    pub async fn get_proofs(&mut self) -> Result<Vec<Proof>, &'static str> {
+    pub async fn get_proofs(&mut self) -> Result<Vec<ProofQueryResult>, &'static str> {
         // Her kan vi har mer logic før vi sender til repository (database) 
 
         return self.zk_repository.get_proofs().await
     }
 
-    pub async fn get_proof(&mut self, id: i32) -> Result<Proof, &'static str> {
+    pub async fn get_proof(&mut self, id: i32) -> Result<ProofQueryResult, &'static str> {
         // Her kan vi har mer logic før vi sender til repository (database) 
 
         return self.zk_repository.get_proof(id).await
