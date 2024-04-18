@@ -13,11 +13,14 @@ pub fn main() {
     // Read the company name the user belongs to
     let company_name = sp1_zkvm::io::read::<String>();
 
+    // Read the message corresponding to the user
+    let message = sp1_zkvm::io::read::<String>();
+
     // Check if the provided credentials match the expected ones
     let credentials_match = (test_username_hash == expected_username_hash) && (test_password_hash == expected_password_hash);
 
-    // Create the output string
-    let output = format!("{{\"match\": {}, \"company\": \"{}\"}}", credentials_match, company_name);
+    // Create the output string with the message included
+    let output = format!("{{\"match\": {}, \"company\": \"{}\", \"message\": \"{}\"}}", credentials_match, company_name, message);
 
     // Write the result
     sp1_zkvm::io::write(&output);

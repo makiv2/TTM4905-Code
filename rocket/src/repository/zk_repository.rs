@@ -1,3 +1,4 @@
+use crate::models::ProofQueryResult;
 use crate::models::Proof;
 use crate::repository::{establish_connection_pg, ZkRepository};
 use crate::schema::proofs::dsl::proofs;
@@ -18,18 +19,18 @@ impl ZkRepository {
         proof 
     }
 
-    pub async fn get_proofs(&mut self) -> Result<Vec<Proof>, &'static str> {
+    pub async fn get_proofs(&mut self) -> Result<Vec<ProofQueryResult>, &'static str> {
 
         let results = proofs
             .limit(50)
-            .load::<Proof>(&mut self.connection)
+            .load::<ProofQueryResult>(&mut self.connection)
             .expect("Error loading proofs");
 
         return Ok(results);
     }
 
-    pub async fn get_proof(&mut self, proof_id: i32) -> Result<Proof, &'static str> {
-        let result = proofs.find(proof_id).first::<Proof>(&mut self.connection);
+    pub async fn get_proof(&mut self, proof_id: i32) -> Result<ProofQueryResult, &'static str> {
+        let result = proofs.find(proof_id).first::<ProofQueryResult>(&mut self.connection);
 
         match result {
             Ok(proof) => Ok(proof),

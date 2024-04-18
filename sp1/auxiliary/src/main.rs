@@ -19,14 +19,15 @@ async fn main() -> Result<(), Error> {
     let args: Vec<String> = env::args().collect();
 
     // Check if the required arguments are provided
-    if args.len() < 3 {
-        println!("Usage: {} <expected_username> <expected_password>", args[0]);
+    if args.len() < 4 {
+        println!("Usage: {} <expected_username> <expected_password> <message>", args[0]);
         return Ok(());
     }
 
     // Extract the expected username and password from the command-line arguments
     let expected_username: String = args[1].clone();
     let expected_password: String = args[2].clone();
+    let message: String = args[3].clone();
 
     // Hash the expected username using SHA-512
     let mut hasher = Sha512::new();
@@ -80,6 +81,7 @@ async fn main() -> Result<(), Error> {
         stdin.write(&test_username_hash);
         stdin.write(&test_password_hash);
         stdin.write(&company_name);
+        stdin.write(&message);
 
         // Execute the ELF binary with the input
         let mut stdout: sp1_core::SP1Stdout = SP1Prover::execute(ELF, stdin).expect("execution failed");
@@ -95,6 +97,7 @@ async fn main() -> Result<(), Error> {
             println!("Matching user found:");
             println!("Username: {}, Password: {}", user.username, user.password);
             println!("Company: {}", output["company"].as_str().unwrap_or(""));
+            println!("Message: {}", &message);
             user_found = true;
 
             // If user is found, generate the proof, start by creating new stdin
@@ -106,6 +109,7 @@ async fn main() -> Result<(), Error> {
             new_stdin.write(&test_username_hash);
             new_stdin.write(&test_password_hash);
             new_stdin.write(&company_name);
+            new_stdin.write(&message);
 
             let proof = SP1Prover::prove_only_output(ELF, new_stdin).expect("proving failed"); // Use the new instance of SP1Stdin
             let proof_filename = format!("credentials_check_proof.json");
