@@ -1,5 +1,4 @@
-use crate::models::ProofQueryResult;
-use crate::models::Proof;
+use crate::models::DBProof;
 use crate::repository::{establish_connection_pg, ZkRepository};
 use crate::schema::proofs::dsl::proofs;
 use diesel::prelude::*;
@@ -11,30 +10,31 @@ impl ZkRepository {
         ZkRepository{ connection }
     }
 
-    pub async fn save_proof(&mut self, proof: Proof) -> Proof {
+    pub async fn save_proof(&mut self, proof: DBProof) -> String {
+
         diesel::insert_into(proofs)
             .values(&proof)
             .execute(&mut self.connection)
             .expect("Error saving proof");
-        proof 
+        String::from("Proof saved")
     }
 
-    pub async fn get_proofs(&mut self) -> Result<Vec<ProofQueryResult>, &'static str> {
+    //pub async fn get_proofs(&mut self) -> Result<Vec<ProofQueryResult>, &'static str> {
 
-        let results = proofs
-            .limit(50)
-            .load::<ProofQueryResult>(&mut self.connection)
-            .expect("Error loading proofs");
+    //    let results = proofs
+    //        .limit(50)
+    //        .load::<ProofQueryResult>(&mut self.connection)
+    //        .expect("Error loading proofs");
 
-        return Ok(results);
-    }
+    //    return Ok(results);
+    //}
 
-    pub async fn get_proof(&mut self, proof_id: i32) -> Result<ProofQueryResult, &'static str> {
-        let result = proofs.find(proof_id).first::<ProofQueryResult>(&mut self.connection);
+    //pub async fn get_proof(&mut self, proof_id: i32) -> Result<ProofQueryResult, &'static str> {
+    //    let result = proofs.find(proof_id).first::<ProofQueryResult>(&mut self.connection);
 
-        match result {
-            Ok(proof) => Ok(proof),
-            Err(_) => Err("Proof not found"),
-        }
-    }
+    //    match result {
+    //        Ok(proof) => Ok(proof),
+    //        Err(_) => Err("Proof not found"),
+    //    }
+    //}
 }
