@@ -26,3 +26,11 @@ pub struct NewProof {
     pub(crate) company: String,
     pub(crate) message: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct CredentialsMessage {
+    pub(crate) company: String,
+    pub(crate) username: String,
+    pub(crate) password: String,
+    pub(crate) message: String,
+}

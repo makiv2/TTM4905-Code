@@ -1,26 +1,27 @@
 use rocket::http::Status;
-use rocket::response::status::{BadRequest, Created};
 use rocket::serde::json::Json;
-use rocket::Data;
-use tokio::fs::File;
-use std::fs;
-use rocket::tokio::io::AsyncWriteExt;
 
-use crate::models::{NewProof, Proof, ProofQueryResult};
+use crate::models::{CredentialsMessage, ProofQueryResult};
 use crate::repository::ZkRepository;
 use crate::services::ZkService;
 
 
 // CRUD Api Endpoints
 // Create
-#[post("/generate", format = "json", data = "<proof>")]
-pub(crate) async fn generate_proof(proof: Json<NewProof>) -> crate::api::Result<Created<Json<Proof>>, BadRequest<String>> {
+#[post("/generate_proof", format = "json", data = "<credentials_with_message>")]
+pub(crate) async fn generate_proof(credentials_with_message: Json<CredentialsMessage>) -> String {
+
+    let mut zk_service = ZkService::new(ZkRepository::new()); // Initialize the service and the repository
     
-    let mut zk_service = ZkService::new(ZkRepository::new());
+    // Get the data for the API call
+    let username = &credentials_with_message.username;
+    let password = &credentials_with_message.password;
+    let company = &credentials_with_message.company;
+    let message = &credentials_with_message.message;
     
-    let proof_result = zk_service.generate_proof(proof).await;
+    let proof_result = zk_service.generate_proof(username, password, company, message).await;
     
-    Ok(Created::new("/").body(Json(proof_result)))
+    return proof_result;
 }
 
 
@@ -55,15 +56,4 @@ pub(crate) async fn get_proof(id: i32) -> crate::api::Result<Json<ProofQueryResu
 #[get("/verify")]
 pub(crate) fn verify() -> &'static str {
     "Hello, world!"
-}
-
-// Upload JSON proof
-
-#[post("/upload/<id>", data = "<data>")]
-pub (crate) async fn upload(id: i32, data: Data<'_>) -> Result<String, std::io::Error> {
-    let file_path = format!("uploads/proof_{}.json", id);
-    let mut file = File::create(&file_path).await?;
-    let bytes = data.open(rocket::data::ToByteUnit::megabytes(10)).into_bytes().await?;
-    file.write_all(&bytes).await?;
-    Ok(file_path)
 }
