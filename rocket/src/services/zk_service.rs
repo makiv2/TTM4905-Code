@@ -1,9 +1,32 @@
 use std::fs;
+use rocket::serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tokio::process::Command;
 use crate::models::{ ProofQueryResult };
 use crate::repository::ZkRepository;
 use crate::services::ZkService;
+
+use std::fs::File;
+use std::io::Read;
+use rocket::serde::json::Json;
+
+#[derive(Debug, Deserialize, Serialize)]
+struct MyData {
+    proof: String,
+    stdout: Stdout,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct Stdout {
+    buffer: Buffer,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct Buffer {
+    data: Vec<u8>,
+}
+
+
 
 impl ZkService {
     pub fn new(zk_repository: ZkRepository) -> Self {
@@ -21,6 +44,12 @@ impl ZkService {
             .output()
             .await
             .expect("failed to execute script");
+
+        // Ignore if it was successful now
+        // Take care of that later
+        // Take the file proof.json and make it a db object and save it in the db
+        let _json = Self::read_json().expect("Failed to read JSON file");
+
 
         // Check if the execution was successful
         let stdout = String::from_utf8_lossy(&output.stdout);
@@ -85,4 +114,22 @@ impl ZkService {
     //     
     //     return self.user_repository.update_user(id, updated_user).await
     // }
+
+    fn read_json() -> Result<Json<MyData>, Box<dyn std::error::Error>> {
+        // Open the JSON file
+        let mut file = File::open("credentials_check_proof.json")?;
+
+        // Read the file content into a string
+        let mut contents = String::new();
+        file.read_to_string(&mut contents)?;
+
+        // Parse the JSON string into a JSON object
+        let json_data: MyData = serde_json::from_str(&contents)?;
+
+        // Here, you can send `json_data` to your database
+        // For demonstration, let's just return the parsed JSON data
+        print!("{:?}", json_data);
+        print!("Read the data?");
+        Ok(Json(json_data))
+    }
 }
