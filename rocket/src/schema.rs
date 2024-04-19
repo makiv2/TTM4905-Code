@@ -4,8 +4,7 @@ diesel::table! {
     proofs (id) {
         id -> Int4,
         proof -> Text,
-        company -> Varchar,
-        message -> Text,
+        stdout_buffer_data -> Bytea,
     }
 }
 
