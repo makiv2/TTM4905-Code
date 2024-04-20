@@ -56,3 +56,15 @@ impl Proof {
 }
 
 // Implement a conversion function from DBProof to Proof //TODO
+impl DBProof {
+    pub(crate) fn to_proof(&self) -> Proof {
+        Proof {
+            proof: self.proof.clone(),
+            stdout: Stdout {
+                buffer: Buffer {
+                    data: self.stdout_buffer_data.clone(),
+                }
+            }
+        }
+    }
+}
