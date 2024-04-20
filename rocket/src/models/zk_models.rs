@@ -55,7 +55,7 @@ impl Proof {
     }
 }
 
-// Implement a conversion function from DBProof to Proof //TODO
+// Implement a conversion function from DBProof to Proof
 impl DBProof {
     pub(crate) fn to_proof(&self) -> Proof {
         Proof {

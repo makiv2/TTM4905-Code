@@ -35,8 +35,15 @@ impl ZkService {
 
     pub async fn get_proofs(&mut self) -> String {
         // Her kan vi har mer logic før vi sender til repository (database) 
-        //return self.zk_repository.get_proofs().await
-        return String::from("Failure")
+        let proofs = self.zk_repository.get_proofs().await;
+        
+        // Convert all the proofs in proofs to json and return it
+        for db_proof in proofs {
+            let proof = db_proof.to_proof();
+            println!("{:?}", proof);
+        }
+        
+        return String::from("PROOFS ABOVE------------------------------------------")
     }
 
     pub async fn get_proof(&mut self, id: i32) -> String {

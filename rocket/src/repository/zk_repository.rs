@@ -19,15 +19,15 @@ impl ZkRepository {
         String::from("Proof saved")
     }
 
-    //pub async fn get_proofs(&mut self) -> Result<Vec<ProofQueryResult>, &'static str> {
+    pub async fn get_proofs(&mut self) -> Vec<DBProof> {
 
-    //    let results = proofs
-    //        .limit(50)
-    //        .load::<ProofQueryResult>(&mut self.connection)
-    //        .expect("Error loading proofs");
+        let results = proofs
+            .limit(50)
+            .load::<DBProof>(&mut self.connection)
+            .expect("Error loading proofs");
 
-    //    return Ok(results);
-    //}
+        return results;
+    }
 
     //pub async fn get_proof(&mut self, proof_id: i32) -> Result<ProofQueryResult, &'static str> {
     //    let result = proofs.find(proof_id).first::<ProofQueryResult>(&mut self.connection);
