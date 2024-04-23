@@ -5,7 +5,6 @@ use crate::services::ZkService;
 use serde_json::json;
 use serde_json::Value;
 
-use std::any::Any;
 use std::fs::File;
 use std::io::Read;
 
@@ -21,8 +20,8 @@ impl ZkService {
         let _output = Command::new("../sp1/auxiliary/target/release/auxiliary")
             .arg(username)
             .arg(password)
-            .arg(company)
             .arg(message)
+            .arg(company) //TODO: We should either use this param or remove it.
             .output()
             .await
             .expect("failed to execute script");
