@@ -31,3 +31,6 @@ scripts/redirect.html
 
 # Uploads in pastebin example.
 examples/pastebin/upload/*
+
+# Ignore credentialscheck
+credentials_check_proof.json
