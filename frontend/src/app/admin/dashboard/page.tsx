@@ -1,5 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useState, useEffect } from "react";
+import { log } from "console";
+
+interface Proof {
+  company: string;
+  id: number;
+  match: boolean;
+  message: string;
+}
 
 const messages = [
   {
@@ -18,6 +29,24 @@ const messages = [
 ];
 
 export default function AdminDashboardPage() {
+  const [proofs, setProofs] = useState<Proof[]>([]);
+
+  useEffect(() => {
+    const fetchProofs = async () => {
+      try {
+        const response = await fetch("http://localhost:9999/proofs");
+        const data: Proof[] = await response.json();
+        setProofs(data);
+      } catch (error) {
+        console.error("Error fetching proofs:", error);
+      }
+    };
+
+    fetchProofs();
+  }, []);
+  console.log("proofs");
+  console.log(proofs);
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-200">
       <div className="container mx-auto py-8">
@@ -44,30 +73,30 @@ export default function AdminDashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {messages.map((message) => (
-                  <tr key={message.id} className="hover:bg-gray-50">
+                {proofs.map((proof) => (
+                  <tr key={proof.id} className="hover:bg-gray-50">
                     <td className="py-4 px-6 border-b border-gray-200 text-left text-black">
-                      <Link href={`/admin/message/${message.id}`}>
-                        {message.id}
+                      <Link href={`/admin/message/${proof.id}`}>
+                        {proof.id}
                       </Link>
                     </td>
                     <td className="py-4 px-6 border-b border-gray-200 text-left text-black">
-                      {message.title}
+                      {proof.message}
                     </td>
                     <td className="py-4 px-6 border-b border-gray-200 text-left text-black">
-                      {new Date(message.time).toLocaleString()}
+                      {new Date(messages[1].time).toLocaleString()}
                     </td>
                     <td className="py-4 px-6 border-b border-gray-200 text-black">
                       <div className="flex items-center">
                         <Image
-                          src={message.company.logo}
-                          alt={message.company.name}
+                          src={`/logos/${proof.company}.png`}
+                          alt={proof.company}
                           width={20}
                           height={20}
                           className="w-6 h-6 mr-2 rounded-full"
                         />
                         <span className="text-sm text-gray-800">
-                          {message.company.name}
+                          {proof.company}
                         </span>
                       </div>
                     </td>
