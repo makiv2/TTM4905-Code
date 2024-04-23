@@ -56,6 +56,7 @@ impl ZkService {
             print!("Proof: {:?}", db_proof.id);
             // Try to generate more readable output
             let output_data = proof.stdout.buffer.data;
+            println!("Output data: {:?}", output_data); // TOR
             if let Ok(input_str) = String::from_utf8(output_data) {
                 if let Some(start_index) = input_str.find('{') {
                     if let Some(json_str) = input_str.get(start_index..) {
