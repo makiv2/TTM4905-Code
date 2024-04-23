@@ -2,7 +2,10 @@ use tokio::process::Command;
 use crate::models::{Proof};
 use crate::repository::ZkRepository;
 use crate::services::ZkService;
+use serde_json::json;
+use serde_json::Value;
 
+use std::any::Any;
 use std::fs::File;
 use std::io::Read;
 
@@ -15,7 +18,7 @@ impl ZkService {
     pub async fn generate_proof(&mut self, username: &String, password: &String, company: &String, message: &String) -> String { //TODO Rewrite return type to proof
 
         // Run the script executable
-        let _output = Command::new("/sp1/auxiliary/target/release/auxiliary")
+        let _output = Command::new("../sp1/auxiliary/target/release/auxiliary")
             .arg(username)
             .arg(password)
             .arg(company)
@@ -27,23 +30,60 @@ impl ZkService {
         // Ignore if it was successful now
         // Take care of that later
         // Take the file proof.json and make it a db object and save it in the db
+        // Check if output is equal to "No matching user found in the database."
+        let output_string = String::from_utf8_lossy(&_output.stdout);
+        println!("Output: {}", output_string);
+        if output_string.trim() == "No matching user found in the database." {
+            return String::from("Failure.")
+        }
         let proof = Self::read_json();
         let db_proof = proof.to_db_proof();
         self.zk_repository.save_proof(db_proof).await;
-        return String::from("Failure") 
+        return String::from("Success, proof saved.") 
     }
 
     pub async fn get_proofs(&mut self) -> String {
         // Her kan vi har mer logic før vi sender til repository (database) 
         let proofs = self.zk_repository.get_proofs().await;
-        
+        println!("Proofs length: {}", proofs.len());
         // Convert all the proofs in proofs to json and return it
+        // Save all proofs
+        let mut json_array: Vec<Value> = Vec::new();
         for db_proof in proofs {
+            println!("Proof: {:?}", db_proof.id);
+
             let proof = db_proof.to_proof();
-            println!("{:?}", proof);
+            let proof_id = db_proof.id;
+            print!("Proof: {:?}", db_proof.id);
+            // Try to generate more readable output
+            let output_data = proof.stdout.buffer.data;
+            if let Ok(input_str) = String::from_utf8(output_data) {
+                if let Some(start_index) = input_str.find('{') {
+                    if let Some(json_str) = input_str.get(start_index..) {
+                        println!("Cleaned JSON: {}", json_str);
+                        let mut json_value: Value = serde_json::from_str(json_str).unwrap();
+                        json_value["id"] = json!(proof_id);
+                        println!("JSON value: {}", json_value.to_string());
+                        json_array.push(json_value);
+                    } else {
+                        println!("Invalid JSON format");
+                    }
+                } else {
+                    println!("No JSON object found in the input");
+                }
+            } else {
+                println!("Failed to convert input bytes to string");
+            }
+
+            
         }
         
-        return String::from("PROOFS ABOVE------------------------------------------")
+        if json_array.is_empty() {
+            String::from("No proofs found")
+        } else {
+            let json_string = serde_json::to_string(&json_array).unwrap();
+            json_string
+        }
     }
 
     pub async fn get_proof(&mut self, id: i32) -> String {
