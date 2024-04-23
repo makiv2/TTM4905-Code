@@ -2,6 +2,7 @@ use super::super::schema::proofs;
 
 use diesel::{prelude::*};
 use serde::{Serialize, Deserialize};
+use rand::Rng;
 
 #[derive(Queryable, Insertable, Serialize, Deserialize)]
 #[diesel(table_name = proofs)]
@@ -47,8 +48,10 @@ pub struct CredentialsMessage {
 // Implement a conversion function from Proof to DBProof
 impl Proof {
     pub(crate) fn to_db_proof(&self) -> DBProof {
+        println!("SAVING PROOF");
+        let random_id = rand::thread_rng().gen_range(1..99999);
         DBProof {
-            id: 0, 
+            id: random_id, 
             proof: self.proof.clone(),
             stdout_buffer_data: self.stdout.buffer.data.clone(), 
         }
