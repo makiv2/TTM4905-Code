@@ -19,15 +19,16 @@ async fn main() -> Result<(), Error> {
     let args: Vec<String> = env::args().collect();
 
     // Check if the required arguments are provided
-    if args.len() < 4 {
-        println!("Usage: {} <expected_username> <expected_password> <message>", args[0]);
+    if args.len() < 5 {
+        println!("Usage: {} <expected_username> <expected_password> <company> <message>", args[0]);
         return Ok(());
     }
 
     // Extract the expected username and password from the command-line arguments
     let expected_username: String = args[1].clone();
     let expected_password: String = args[2].clone();
-    let message: String = args[3].clone();
+    let company: String = args[3].clone();
+    let message: String = args[4].clone();
 
     // Hash the expected username using SHA-512
     let mut hasher = Sha512::new();
@@ -59,8 +60,7 @@ async fn main() -> Result<(), Error> {
         .await?;
 
     // Dummy company name
-    let company_name: String = "Netcompany".to_string();
-
+    let company_name: String = company;
     // Flag to track if a matching user is found
     let mut user_found: bool = false;
 
