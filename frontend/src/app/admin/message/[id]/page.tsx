@@ -1,6 +1,16 @@
+"use client";
+
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { useState, useEffect } from "react";
+
+interface Proof {
+  company: string;
+  id: number;
+  match: boolean;
+  message: string;
+}
 
 const messages = [
   {
@@ -12,7 +22,7 @@ const messages = [
     company: { name: "Statoil", logo: "/logos/statoil.png" },
   },
   {
-    id: 1337,
+    id: 19232,
     title: "Delaying trains on purpose",
     time: "2023-06-11T14:45:00",
     message: "Obviously we have been doing this for quite some time now",
@@ -25,61 +35,107 @@ const messages = [
 export default function MessageDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: { id: number };
 }) {
-  const message = messages.find((msg) => msg.id === Number(params.id));
+  const [proof, setProof] = useState<Proof | null>(null);
 
-  if (!message) {
-    notFound();
+  useEffect(() => {
+    const fetchProof = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:9999/proofs/${params.id}`
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: Proof = await response.json();
+        setProof(data);
+      } catch (error) {
+        console.error("Error fetching proofs:", error);
+      }
+    };
+
+    fetchProof();
+  }, [params.id]);
+
+  const handleDownloadProof = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:9999/proofs/${params.id}/raw`
+      );
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "proof.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading proof:", error);
+    }
+  };
+
+  if (!proof) {
+    // Loading if not found
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-100"></div>
+    );
   }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="container mx-auto py-8">
         <h1 className="text-2xl font-bold mb-6 text-gray-800 text-center">
-          {message.title}
+          Placeholder title
         </h1>
         <div className="flex justify-center">
           <div className="w-full sm:w-4/5 md:w-3/4 lg:w-2/3 xl:w-1/2">
             <div className="bg-white shadow-md rounded-lg px-8 py-6 mb-4">
               <div className="mb-4">
                 <span className="font-bold text-gray-700">ID:</span>{" "}
-                <span className="text-gray-600">{message.id}</span>
+                <span className="text-gray-600">{proof.id}</span>
               </div>
               <div className="mb-4">
                 <span className="font-bold text-gray-700">Time:</span>{" "}
                 <span className="text-gray-600">
-                  {new Date(message.time).toLocaleString()}
+                  {new Date(messages[0].time).toLocaleString()}
                 </span>
               </div>
               <div className="mb-4">
                 <span className="font-bold text-gray-700">Company:</span>
                 <div className="flex items-center">
                   <Image
-                    src={message.company.logo}
-                    alt={message.company.name}
+                    src={`/logos/${proof.company}.png`}
+                    alt={proof.message}
                     width={20}
                     height={20}
                     className="w-6 h-6 mr-2"
                   />
-                  <span className="text-gray-600">{message.company.name}</span>
+                  <span className="text-gray-600">{proof.company}</span>
                 </div>
               </div>
               <div className="mb-4">
                 <span className="font-bold text-gray-700">Message:</span>{" "}
-                <span className="text-gray-600">{message.message}</span>
+                <span className="text-gray-600">{proof.message}</span>
               </div>
               <div className="mb-4">
                 <span className="font-bold text-gray-700">Files:</span>
                 <ul className="list-disc list-inside text-gray-600">
-                  {message.files.map((file, index) => (
+                  {messages[0].files.map((file, index) => (
                     <li key={index}>{file}</li>
                   ))}
                 </ul>
               </div>
               <div className="mb-4">
-                <span className="font-bold text-gray-700">Proof:</span>{" "}
-                <span className="text-gray-600">proof.json</span>
+                <span className="text-gray-700">Download proof:</span>{" "}
+                <span
+                  className="font-bold text-gray-700 cursor-pointer"
+                  onClick={handleDownloadProof}
+                >
+                  proof.json
+                </span>
               </div>
             </div>
             <Link href="/admin/dashboard">
