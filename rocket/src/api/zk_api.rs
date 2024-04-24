@@ -1,6 +1,6 @@
 use rocket::serde::json::Json;
 
-use crate::models::{CredentialsMessage};
+use crate::models::{CredentialsMessage, Proof};
 use crate::repository::ZkRepository;
 use crate::services::ZkService;
 
@@ -43,6 +43,16 @@ pub(crate) async fn get_proof(id: i32) -> String {
     let proof_json_string = zk_service.get_proof(id).await;
 
     return proof_json_string;
+}
+
+#[get("/proofs/<id>/raw")]
+pub(crate) async fn get_raw_proof(id: i32) -> Json<Proof> {
+    
+    let mut zk_service = ZkService::new(ZkRepository::new());
+    
+    let raw_proof_json_string = zk_service.get_raw_proof(id).await;
+
+    return raw_proof_json_string;
 }
 
 // Verify TODO

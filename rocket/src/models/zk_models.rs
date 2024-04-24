@@ -12,14 +12,6 @@ pub struct DBProof {
     pub(crate) stdout_buffer_data: Vec<u8>, 
 }
 
-#[derive(Queryable, Serialize)]
-pub struct ProofQueryResult {
-    pub id: i32,
-    pub proof: String,
-    pub company: String,
-    pub message: String,
-}
-
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Proof {
     pub(crate) proof: String,

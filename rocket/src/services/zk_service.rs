@@ -7,6 +7,7 @@ use serde_json::Value;
 
 use std::fs::File;
 use std::io::Read;
+use rocket::serde::json::Json;
 
 
 impl ZkService {
@@ -97,6 +98,14 @@ impl ZkService {
             }
         }
         return String::from("Failure")
+    }
+
+    pub async fn get_raw_proof(&mut self, id: i32) -> Json<Proof> {
+
+        let db_proof = self.zk_repository.get_proof(id).await;
+        let proof = db_proof.to_proof();
+        
+        Json(proof)
     }
 
     // Private helper function 

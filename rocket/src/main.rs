@@ -20,7 +20,7 @@ fn index() -> &'static str {
 fn rocket() -> _ {
     // Create any necessary dependencies for UserService
     // let user_repository = repository::UserRepository::new();
-    // Create UserService with dependencies and manage it with rocket with .manage() this doesnt work but i dont think its worth fixing
+    // Create UserService with dependencies and manage it with rocket with .manage() this doesnt work but I do not think its worth fixing
     // let user_service = services::UserService::new(user_repository);
 
     let cors = CorsOptions::default()
@@ -30,7 +30,7 @@ fn rocket() -> _ {
     rocket::build()
         .mount("/", routes![index, api::health])
         .mount("/", routes![api::user_api::create_user, api::user_api::get_users, api::user_api::get_user, api::user_api::delete_user,
-                            api::zk_api::generate_proof, api::zk_api::get_proofs, api::zk_api::get_proof, api::zk_api::verify])
+                            api::zk_api::generate_proof, api::zk_api::get_proofs, api::zk_api::get_proof, api::zk_api::get_raw_proof, api::zk_api::verify])
         .attach(cors.to_cors().unwrap())
         // .manage(user_service)
 }
