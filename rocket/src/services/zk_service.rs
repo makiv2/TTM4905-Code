@@ -52,30 +52,20 @@ impl ZkService {
             println!("Proof: {:?}", db_proof.id);
 
             let proof = db_proof.to_proof();
-            let proof_id = db_proof.id;
-            print!("Proof: {:?}", db_proof.id);
-            // Try to generate more readable output
-            let output_data = proof.stdout.buffer.data;
-            println!("Output data: {:?}", output_data); // TOR
-            if let Ok(input_str) = String::from_utf8(output_data) {
-                if let Some(start_index) = input_str.find('{') {
-                    if let Some(json_str) = input_str.get(start_index..) {
-                        println!("Cleaned JSON: {}", json_str);
-                        let mut json_value: Value = serde_json::from_str(json_str).unwrap();
-                        json_value["id"] = json!(proof_id);
-                        println!("JSON value: {}", json_value.to_string());
-                        json_array.push(json_value);
-                    } else {
-                        println!("Invalid JSON format");
-                    }
-                } else {
-                    println!("No JSON object found in the input");
-                }
-            } else {
-                println!("Failed to convert input bytes to string");
-            }
-
             
+            let proof_id = db_proof.id;
+            let output_data = proof.stdout.buffer.data;
+            print!("Proof: {:?}", db_proof.id);
+            println!("Output data: {:?}", output_data);
+
+            match Self::process_output(output_data, proof_id) {
+                Ok(json_value) => {
+                    json_array.push(json_value);
+                },
+                Err(error) => {
+                    println!("Error processing output: {}", error);
+                }
+            }
         }
         
         if json_array.is_empty() {
@@ -87,9 +77,26 @@ impl ZkService {
     }
 
     pub async fn get_proof(&mut self, id: i32) -> String {
-        // Her kan vi har mer logic før vi sender til repository (database) 
-        //return self.zk_repository.get_proof(id).await
-        return String::from("Failure") 
+
+        let db_proof = self.zk_repository.get_proof(id).await;
+
+        let proof = db_proof.to_proof();
+
+        let proof_id = db_proof.id;
+        let output_data = proof.stdout.buffer.data;
+        print!("Proof: {:?}", db_proof.id);
+        println!("Output data: {:?}", output_data);
+
+        match Self::process_output(output_data, proof_id) {
+            Ok(json_value) => {
+                let json_string = json_value.to_string();
+                return json_string;
+            },
+            Err(error) => {
+                println!("Error processing output: {}", error);
+            }
+        }
+        return String::from("Failure")
     }
 
     // Private helper function 
@@ -105,5 +112,29 @@ impl ZkService {
         let proof: Proof = serde_json::from_str(&contents).unwrap();
 
         return proof;
+    }
+
+    fn process_output(output_data: Vec<u8>, proof_id: i32) -> Result<Value, String> {
+        // Process the output from the script
+        return if let Ok(input_str) = String::from_utf8(output_data) {
+            if let Some(start_index) = input_str.find('{') {
+                if let Some(json_str) = input_str.get(start_index..) {
+                    println!("Cleaned JSON: {}", json_str);
+                    let mut json_value: Value = serde_json::from_str(json_str).unwrap();
+                    json_value["id"] = json!(proof_id);
+                    println!("JSON value: {}", json_value.to_string());
+                    Ok(json_value)
+                } else {
+                    println!("Invalid JSON format");
+                    Err(String::from("Invalid JSON format"))
+                }
+            } else {
+                println!("No JSON object found in the input");
+                Err(String::from("No JSON object found in the input"))
+            }
+        } else {
+            println!("Failed to convert input bytes to string");
+            Err(String::from("Failed to convert input bytes to string"))
+        }
     }
 }

@@ -40,12 +40,12 @@ pub(crate) async fn get_proof(id: i32) -> String {
     
     let mut zk_service = ZkService::new(ZkRepository::new());
     
-    let proof = zk_service.get_proof(id).await;
+    let proof_json_string = zk_service.get_proof(id).await;
 
-    return proof;
+    return proof_json_string;
 }
 
-// Verify (Hva gjør vi egt her?)
+// Verify TODO
 #[get("/verify")]
 pub(crate) fn verify() -> &'static str {
     "Hello, world!"

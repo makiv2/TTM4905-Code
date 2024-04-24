@@ -29,12 +29,9 @@ impl ZkRepository {
         return results;
     }
 
-    //pub async fn get_proof(&mut self, proof_id: i32) -> Result<ProofQueryResult, &'static str> {
-    //    let result = proofs.find(proof_id).first::<ProofQueryResult>(&mut self.connection);
-
-    //    match result {
-    //        Ok(proof) => Ok(proof),
-    //        Err(_) => Err("Proof not found"),
-    //    }
-    //}
+    pub async fn get_proof(&mut self, proof_id: i32) -> DBProof {
+        let result = proofs.find(proof_id).first::<DBProof>(&mut self.connection)
+            .expect("Error getting proof");
+        return result;
+    }
 }
