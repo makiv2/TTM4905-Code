@@ -8,4 +8,3 @@ edition = "2021"
 sp1-zkvm = { git = "https://github.com/t0rs/sp1-privacy.git" }
 ed25519-dalek = {git = "https://github.com/sp1-patches/curve25519-dalek", features = ["pkcs8","pem"]}
 pem = "1.0"
-serde = "1.0"

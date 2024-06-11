@@ -2,17 +2,9 @@ use sp1_core::{SP1Prover, SP1Stdin, SP1Verifier};
 use std::fs::File;
 use std::io::{self, Read};
 use std::env;
-use ed25519_dalek::{pkcs8::DecodePublicKey, Signature, Verifier, VerifyingKey};
-use pem::parse;
+use serde_json;
 
 const ELF: &[u8] = include_bytes!("../../program/elf/riscv32im-succinct-zkvm-elf");
-
-fn read_file(path: &str) -> Result<String, io::Error> {
-    let mut file = File::open(path)?;
-    let mut content = String::new();
-    file.read_to_string(&mut content)?;
-    Ok(content)
-}
 
 fn read_file_bytes(path: &str) -> Result<Vec<u8>, io::Error> {
     let mut file = File::open(path)?;
@@ -60,15 +52,24 @@ fn main() {
     println!("All inputs written");
     
     let mut proof = SP1Prover::prove_only_output(ELF, stdin).expect("proving failed");
-
+    println!("Proof generated");
     // Read output.
-    let output: String = proof.stdout.read::<String>();
+    let output_str: String = proof.stdout.read::<String>();
 
     // Parse the output string
     println!("Parsing output");
-    let output: serde_json::Value = serde_json::from_str(&output).expect("failed to parse output");
+    let output: serde_json::Value = serde_json::from_str(&output_str).expect("failed to parse output");
 
+    // Extract the relevant fields from the output
+    let credentials_match = output["match"].as_bool().unwrap_or(false);
+    let company = output["company"].as_str().unwrap_or("");
+    let message = output["message"].as_str().unwrap_or("");
 
+    // Print the extracted information
+    println!("Credentials match: {}", credentials_match);
+    println!("Company: {}", company);
+    println!("Message: {}", message);
+    
     // Verify proof.
     SP1Verifier::verify_only_output(ELF, &proof).expect("verification failed");
 
