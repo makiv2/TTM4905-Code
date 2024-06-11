@@ -1,7 +1,6 @@
 from ninja import Schema
 
 
-class UserSchema(Schema):
+class PubkeySchema(Schema):
     id: int
-    username: str
-    password: str
+    key: str
