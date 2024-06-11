@@ -3,35 +3,35 @@ from typing import List
 from django.shortcuts import get_object_or_404
 
 
-from users.models import User
-from users.schema import UserSchema
+from pubkeys.models import Pubkey
+from pubkeys.schema import PubkeySchema
 from utils.schema import NotFoundSchema
 
 router = Router()
 
 
-@router.get("/", response={200: List[UserSchema]})
-def list_users(request):
-    queryset = User.objects.all()
+@router.get("/", response={200: List[PubkeySchema]})
+def list_pubkeys(request):
+    queryset = Pubkey.objects.all()
     return queryset
 
 
-@router.get("/{user_id}", response={200: UserSchema, 404: NotFoundSchema})
-def get_user(request, user_id: int):
-    user = get_object_or_404(User, id=user_id)
-    return user
+@router.get("/{pubkey_id}", response={200: PubkeySchema, 404: NotFoundSchema})
+def get_pubkey(request, pubkey_id: int):
+    pubkey = get_object_or_404(Pubkey, id=pubkey_id)
+    return pubkey
 
 
-@router.post("/", response={200: UserSchema})
-def new_user(request, payload: UserSchema):
-    user = User.objects.create(**payload.dict())
-    return user
+@router.post("/", response={200: PubkeySchema})
+def new_pubkey(request, payload: PubkeySchema):
+    pubkey = Pubkey.objects.create(**payload.dict())
+    return pubkey
 
 
-@router.put("/{user_id}", response={200: UserSchema, 404: NotFoundSchema})
-def update_user(request, user_id: int, data: UserSchema):
-    user = get_object_or_404(User, id=user_id)
+@router.put("/{pubkey_id}", response={200: PubkeySchema, 404: NotFoundSchema})
+def update_pubkey(request, pubkey_id: int, data: PubkeySchema):
+    pubkey = get_object_or_404(Pubkey, id=pubkey_id)
     for attribute, value in data.dict().items():
-        setattr(user, attribute, value)
-        user.save()
-    return user
+        setattr(pubkey, attribute, value)
+        pubkey.save()
+    return pubkey
