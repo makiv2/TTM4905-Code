@@ -5,15 +5,15 @@ from pathlib import Path
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from users.models import User
+from pubkeys.models import Pubkey
 
 
 class Command(BaseCommand):
-    help = "Create users from JSON file"
+    help = "Create public keys from JSON file"
 
     def handle(self, *args, **kwargs):
         # set the path to the datafile
-        datafile = Path(os.path.dirname(settings.BASE_DIR)) / "data" / "users.json"
+        datafile = Path(os.path.dirname(settings.BASE_DIR)) / "data" / "pubkeys.json"
         print("----------------------------------------------------")
         print("----------------------------------------------------")
         print(datafile)
@@ -26,6 +26,6 @@ class Command(BaseCommand):
             data = json.load(f)
 
         # convert list of dictionaries to list of Track models, and bulk_create
-        users = [User(**user) for user in data]
+        pubkeys = [Pubkey(**pubkey) for pubkey in data]
 
-        User.objects.bulk_create(users)
+        Pubkey.objects.bulk_create(pubkeys)
