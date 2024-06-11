@@ -1,26 +1,40 @@
 #![no_main]
+use ed25519_dalek::{pkcs8::DecodePublicKey, Signature, Verifier, VerifyingKey};
+use pem::parse;
+
+
 sp1_zkvm::entrypoint!(main);
 
 pub fn main() {
-    // Read the hashed username and password of the user we are looking for
-    let expected_username_hash = sp1_zkvm::io::read::<String>();
-    let expected_password_hash = sp1_zkvm::io::read::<String>();
-
-    // Read the hashed username and password of the user we are testing against
-    let test_username_hash = sp1_zkvm::io::read::<String>();
-    let test_password_hash = sp1_zkvm::io::read::<String>();
+    // Read the key files
+    let pub_key = sp1_zkvm::io::read::<Vec<u8>>();
+    let message = sp1_zkvm::io::read::<Vec<u8>>();
+    let signature = sp1_zkvm::io::read::<Vec<u8>>();
 
     // Read the company name the user belongs to
     let company_name = sp1_zkvm::io::read::<String>();
 
-    // Read the message corresponding to the user
-    let message = sp1_zkvm::io::read::<String>();
+    // Parse the public key
+    let public_key_pem = parse(pub_key).expect("Failed to parse public key");
+    let public_key_der = public_key_pem.contents;
 
-    // Check if the provided credentials match the expected ones
-    let credentials_match = (test_username_hash == expected_username_hash) && (test_password_hash == expected_password_hash);
+    let verifying_key = VerifyingKey::from_public_key_der(&public_key_der)
+        .expect("Invalid public key DER");
 
+    // Human readable message content
+    let message_content = String::from_utf8(message.clone()).expect("Invalid UTF-8 message");
+
+    // Parse signature
+    let signature = Signature::try_from(&signature[..])
+        .expect("Invalid signature format");
+
+    let mut signature_match: bool = false;
+    match verifying_key.verify(&message, &signature) {
+        Ok(_) => signature_match = true,
+        Err(_) => signature_match = false,
+    }
     // Create the output string with the message included
-    let output = format!("{{\"match\": {}, \"company\": \"{}\", \"message\": \"{}\"}}", credentials_match, company_name, message);
+    let output = format!("{{\"match\": {}, \"company\": \"{}\", \"message\": \"{}\"}}", signature_match, company_name, message_content);
 
     // Write the result
     sp1_zkvm::io::write(&output);
