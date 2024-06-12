@@ -1,12 +1,12 @@
 #![no_main]
-use ed25519_dalek::{pkcs8::DecodePublicKey, Signature, Verifier, VerifyingKey};
+use ed25519_dalek::{pkcs8::DecodePublicKey, Signature, VerifyingKey};
 use pem::parse;
 
 
 sp1_zkvm::entrypoint!(main);
 
 pub fn main() {
-    // Read the key files
+    // Read the input data
     let pub_key = sp1_zkvm::io::read::<Vec<u8>>();
     let message = sp1_zkvm::io::read::<Vec<u8>>();
     let signature = sp1_zkvm::io::read::<Vec<u8>>();
@@ -19,15 +19,12 @@ pub fn main() {
     let public_key_der = public_key_pem.contents;
     let verifying_key = VerifyingKey::from_public_key_der(&public_key_der).expect("Failed to decode public key");
 
-    // Make public key into a readable format
-    let public_key_content = String::from_utf8(pub_key.clone()).expect("Faen");;
-
     // Read the message
     let message_content = String::from_utf8(message.clone()).expect("Failed to read message");
     // Trim the message
     let message_content = message_content.trim();
     
-    // Read the signature
+    // Parse the signature
     let signature = Signature::try_from(&signature[..]).expect("Failed to decode signature");
     
     let valid_signature: bool;
