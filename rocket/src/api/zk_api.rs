@@ -13,12 +13,11 @@ pub(crate) async fn generate_proof(credentials_with_message: Json<CredentialsMes
     let mut zk_service = ZkService::new(ZkRepository::new()); // Initialize the service and the repository
 
     // Get the data for the API call
-    let username = &credentials_with_message.username;
-    let password = &credentials_with_message.password;
-    let company = &credentials_with_message.company;
-    let message = &credentials_with_message.message;
+    let messageb64 = &credentials_with_message.messageb64;
+    let signatureb64 = &credentials_with_message.signatureb64;
+    let companyb64 = &credentials_with_message.companyb64;
 
-    let proof_result = zk_service.generate_proof(username, password, company, message).await;
+    let proof_result = zk_service.generate_proof(messageb64, signatureb64, companyb64).await;
 
     return proof_result;
 }

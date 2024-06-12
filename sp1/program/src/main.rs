@@ -1,27 +1,43 @@
 #![no_main]
+use ed25519_dalek::{pkcs8::DecodePublicKey, Signature, VerifyingKey};
+use pem::parse;
+
+
 sp1_zkvm::entrypoint!(main);
 
 pub fn main() {
-    // Read the hashed username and password of the user we are looking for
-    let expected_username_hash = sp1_zkvm::io::read::<String>();
-    let expected_password_hash = sp1_zkvm::io::read::<String>();
-
-    // Read the hashed username and password of the user we are testing against
-    let test_username_hash = sp1_zkvm::io::read::<String>();
-    let test_password_hash = sp1_zkvm::io::read::<String>();
+    // Read the input data
+    let pub_key = sp1_zkvm::io::read::<Vec<u8>>();
+    let message = sp1_zkvm::io::read::<Vec<u8>>();
+    let signature = sp1_zkvm::io::read::<Vec<u8>>();
 
     // Read the company name the user belongs to
     let company_name = sp1_zkvm::io::read::<String>();
 
-    // Read the message corresponding to the user
-    let message = sp1_zkvm::io::read::<String>();
+    // Parse the public key
+    let public_key_pem = parse(pub_key.clone()).expect("Failed to parse public key");
+    let public_key_der = public_key_pem.contents;
+    let verifying_key = VerifyingKey::from_public_key_der(&public_key_der).expect("Failed to decode public key");
 
-    // Check if the provided credentials match the expected ones
-    let credentials_match = (test_username_hash == expected_username_hash) && (test_password_hash == expected_password_hash);
+    // Read the message
+    let message_content = String::from_utf8(message.clone()).expect("Failed to read message");
+    // Trim the message
+    let message_content = message_content.trim();
+    
+    // Parse the signature
+    let signature = Signature::try_from(&signature[..]).expect("Failed to decode signature");
+    
+    let valid_signature: bool;
+    // Verify signature and return it as valid_signature
+    match verifying_key.verify_strict(&message, &signature) {
+        Ok(_) => valid_signature = true,
+        Err(_) => valid_signature = false,
+    };
 
     // Create the output string with the message included
-    let output = format!("{{\"match\": {}, \"company\": \"{}\", \"message\": \"{}\"}}", credentials_match, company_name, message);
+    let output = format!("{{\"match\": {}, \"company\": \"{}\", \"message\": \"{}\"}}", valid_signature, company_name, message_content.to_string());
 
     // Write the result
     sp1_zkvm::io::write(&output);
+
 }

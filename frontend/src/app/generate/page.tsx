@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import CompanyDropdown from "../components/CompanyDropdown"; // Adjust the path as needed
 
+// Dummy companies for appearance
 const companies = [
   { name: "Statoil", logo: "/logos/Statoil.png" },
   { name: "NSB", logo: "/logos/NSB.png" },
@@ -13,32 +14,59 @@ const companies = [
 
 export default function DashboardPage() {
   const [selectedCompany, setSelectedCompany] = useState(companies[0]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [messageFile, setMessageFile] = useState<File | null>(null);
+  const [signatureFile, setSignatureFile] = useState<File | null>(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showFailureMessage, setShowFailureMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+
+  const handleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    setFile: React.Dispatch<React.SetStateAction<File | null>>
+  ) => {
+    const file = event.target.files?.[0] || null;
+    setFile(file);
+  };
+
+  const readFileAsBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(file); // Reads file as data URL
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      if (!messageFile || !signatureFile) {
+        throw new Error("Both files must be uploaded.");
+      }
+
+      const messageFileBase64Url = await readFileAsBase64(messageFile);
+      const signatureFileBase64Url = await readFileAsBase64(signatureFile);
+      const companyBase64 = btoa(selectedCompany.name);
+
+      // Remove the data URL prefix
+      const messageFileBase64 = messageFileBase64Url.split("base64,")[1];
+      const signatureFileBase64 = signatureFileBase64Url.split("base64,")[1];
+
       const response = await fetch("http://localhost:9999/generate_proof", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: email,
-          password: password,
-          company: selectedCompany.name,
-          message: message,
+          companyb64: companyBase64,
+          messageb64: messageFileBase64,
+          signatureb64: signatureFileBase64,
         }),
       });
+
       const data = await response.text();
       console.log(data);
 
@@ -51,6 +79,7 @@ export default function DashboardPage() {
       }
     } catch (error) {
       console.error("Error:", error);
+      setShowFailureMessage(true);
     }
   };
 
@@ -74,7 +103,7 @@ export default function DashboardPage() {
               role="alert"
             >
               <p className="font-bold">Failure!</p>
-              <p>Failed to generate proof </p>
+              <p>Failed to generate proof.</p>
             </div>
           )}
           <form onSubmit={handleSubmit}>
@@ -89,67 +118,34 @@ export default function DashboardPage() {
               />
             </div>
             <div className="mb-4">
-              <label
-                className="block text-gray-700 font-bold mb-2"
-                htmlFor="email"
-              >
-                Email
+              <label className="block text-gray-700 font-bold mb-2">
+                Message File
               </label>
               <input
-                type="email"
-                id="email"
+                type="file"
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="mb-6">
-              <label
-                className="block text-gray-700 font-bold mb-2"
-                htmlFor="password"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                onChange={(e) => handleFileChange(e, setMessageFile)}
               />
             </div>
             <div className="mb-4">
-              <label
-                className="block text-gray-700 font-bold mb-2"
-                htmlFor="message"
-              >
-                Message
+              <label className="block text-gray-700 font-bold mb-2">
+                Signature File
               </label>
-              <textarea
-                id="message"
+              <input
+                type="file"
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="Enter your message"
-                rows={4}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                required
-              ></textarea>
+                onChange={(e) => handleFileChange(e, setSignatureFile)}
+              />
             </div>
             <div className="flex items-center justify-between">
               <button
-                className={`${
-                  isSubmitting
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-blue-500 hover:bg-blue-700"
-                } text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline`}
                 type="submit"
+                className={`${
+                  isSubmitting ? "bg-gray-500" : "bg-blue-500"
+                } hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline`}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Done" : "Post Message"}
+                {isSubmitting ? "Done" : "Submit"}
               </button>
             </div>
           </form>
