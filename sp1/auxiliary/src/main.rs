@@ -2,8 +2,7 @@ use reqwest::Error;
 use serde::Deserialize;
 use sp1_core::{SP1Prover, SP1Stdin};
 use std::env;
-use std::fs::File;
-use std::io::{self, Read};
+use base64;
 
 #[derive(Deserialize, Debug)]
 struct PubKey {
@@ -11,13 +10,6 @@ struct PubKey {
 }
 
 const ELF: &[u8] = include_bytes!("../../program/elf/riscv32im-succinct-zkvm-elf");
-
-fn read_file_bytes(path: &str) -> Result<Vec<u8>, io::Error> {
-    let mut file = File::open(path)?;
-    let mut content = Vec::new();
-    file.read_to_end(&mut content)?;
-    Ok(content)
-}
 
 // String to bytes function
 fn str_to_bytes(s: &str) -> Vec<u8> {
@@ -29,22 +21,29 @@ async fn main() -> Result<(), Error> {
     // Read the command-line arguments
     let args: Vec<String> = env::args().collect();
     if args.len() != 4 {
-        eprintln!("Usage: {} <message.txt> <message.txt.sig> <company>", args[0]);
+        eprintln!("Usage: {} <message_b64> <signature_b64> <company_b64>", args[0]);
         std::process::exit(1);
     }
-    let message_path = &args[1];
-    let signature_path = &args[2];
-    let company_name = &args[3];
+    // New parameters are not filepaths, but the files b64 encoded
 
-    // Read the message from file
-    let message: Vec<u8> = read_file_bytes(message_path).expect("Error reading message file");
+    let message_b64 = &args[1];
+    let signature_b64 = &args[2];
+    let company_name_b64 = &args[3];
+
+    // Decode the b64 encoded files
+    // Decode the mesaage
+    let message: Vec<u8> = base64::decode(message_b64).expect("Error decoding message");
     // Define message as a string
     let message_str = String::from_utf8(message.clone()).expect("Invalid UTF-8 message");
-    // Print message
-    println!("Message: {:?}", message_str);
+  
 
-    // Read the signature from file
-    let signature_bytes: Vec<u8> = read_file_bytes(signature_path).expect("Error reading signature file");
+    // Decode the signature
+    let signature_bytes: Vec<u8> = base64::decode(signature_b64).expect("Error decoding signature");
+
+    // Decode the company name
+    let company_name: Vec<u8> = base64::decode(company_name_b64).expect("Error decoding company name");
+    // Define company name as a string
+    let company_name = String::from_utf8(company_name.clone()).expect("Invalid UTF-8 company name");
 
     // URL of the Django API endpoint for fetching users
     // Locally let url = "http://localhost:8000/api/users/";
@@ -73,8 +72,6 @@ async fn main() -> Result<(), Error> {
         // Make the pubkey into the correct type
         let pubkey = pubkey.key;
         let pubkey_bytes = str_to_bytes(&pubkey);
-        // Print public key from pem format
-        println!("Public key: {:?}", String::from_utf8(pubkey_bytes.clone()).expect("Invalid UTF-8 public key"));
 
         // Generate input for the current pubkey
         let mut stdin: SP1Stdin = SP1Stdin::new();
@@ -119,7 +116,7 @@ async fn main() -> Result<(), Error> {
     }
 
     if !user_found {
-        println!("No matching user found in the database.");
+        println!("No compatible signature found in the database.");
     }
 
     Ok(())
