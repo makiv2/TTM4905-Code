@@ -4,7 +4,7 @@ use crate::repository::ZkRepository;
 use crate::services::ZkService;
 use serde_json::json;
 use serde_json::Value;
-
+use base64;
 use std::fs::File;
 use std::io::Read;
 use rocket::serde::json::Json;
@@ -16,6 +16,23 @@ impl ZkService {
     }
 
     pub async fn generate_proof(&mut self, messageb64: &String, signatureb64: &String, companyb64: &String) -> String { //TODO Rewrite return type to proof
+        // Check if inputs are base64 encoded by length
+        if messageb64.len() % 4 != 0 || signatureb64.len() % 4 != 0 || companyb64.len() % 4 != 0 {
+            return String::from("Invalid base64 encoding.")
+        }
+        // Try decoding the base64 encoded strings and return failure if it fails
+        let _message = match base64::decode(messageb64) {
+            Ok(message) => message,
+            Err(_) => return String::from("Failed to decode message base64.")
+        };
+        let _signature = match base64::decode(signatureb64) {
+            Ok(signature) => signature,
+            Err(_) => return String::from("Failed to decode signature base64.")
+        };
+        let _company = match base64::decode(companyb64) {
+            Ok(company) => company,
+            Err(_) => return String::from("Failed to decode company base64.")
+        };
 
         // Run the script executable
         let _output = Command::new("../sp1/auxiliary/target/release/auxiliary")

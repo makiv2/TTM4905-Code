@@ -7,7 +7,7 @@ mod services;
 #[macro_use]
 extern crate rocket;
 
-use rocket::{get};
+use rocket::get;
 use rocket_cors::{AllowedOrigins, CorsOptions};
 
 

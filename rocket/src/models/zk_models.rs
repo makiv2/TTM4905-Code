@@ -1,6 +1,6 @@
 use super::super::schema::proofs; 
 
-use diesel::{prelude::*};
+use diesel::prelude::*;
 use serde::{Serialize, Deserialize};
 use rand::Rng;
 
