@@ -30,12 +30,10 @@ pub struct Buffer {
 
 #[derive(Serialize, Deserialize)]
 pub struct CredentialsMessage {
-    pub(crate) company: String,
-    pub(crate) username: String,
-    pub(crate) password: String,
-    pub(crate) message: String,
+    pub(crate) companyb64: String,
+    pub(crate) signatureb64: String,
+    pub(crate) messageb64: String,
 }
-
 
 // Implement a conversion function from Proof to DBProof
 impl Proof {

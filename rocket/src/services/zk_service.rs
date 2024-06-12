@@ -1,5 +1,5 @@
 use tokio::process::Command;
-use crate::models::{Proof};
+use crate::models::Proof;
 use crate::repository::ZkRepository;
 use crate::services::ZkService;
 use serde_json::json;
@@ -15,14 +15,13 @@ impl ZkService {
         ZkService { zk_repository }
     }
 
-    pub async fn generate_proof(&mut self, username: &String, password: &String, company: &String, message: &String) -> String { //TODO Rewrite return type to proof
+    pub async fn generate_proof(&mut self, messageb64: &String, signatureb64: &String, companyb64: &String) -> String { //TODO Rewrite return type to proof
 
         // Run the script executable
         let _output = Command::new("../sp1/auxiliary/target/release/auxiliary")
-            .arg(username)
-            .arg(password)
-            .arg(company)
-            .arg(message)
+            .arg(messageb64)
+            .arg(signatureb64)
+            .arg(companyb64)
             .output()
             .await
             .expect("failed to execute script");
@@ -33,7 +32,7 @@ impl ZkService {
         // Check if output is equal to "No matching user found in the database."
         let output_string = String::from_utf8_lossy(&_output.stdout);
         println!("Output: {}", output_string);
-        if output_string.trim() == "No matching user found in the database." {
+        if output_string.trim() == "No compatible signature found in the database." {
             return String::from("Failure.")
         }
         let proof = Self::read_json();
