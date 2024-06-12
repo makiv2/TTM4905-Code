@@ -30,12 +30,12 @@ superuser:
 
 .PHONY: fmt
 fmt:
-	.venv/bin/black backend users --exclude /migration
+	.venv/bin/black backend pubkeys --exclude /migration
 
 
 .PHONY: check-fmt
 check-fmt:
-	.venv/bin/black backend users --check --exclude /migrations
+	.venv/bin/black backend pubkeys --check --exclude /migrations
 
 
 .PHONY: mypy

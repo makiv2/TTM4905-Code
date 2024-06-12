@@ -1,11 +1,11 @@
 from ninja import NinjaAPI, Router, Schema
 
-from users.api import router as user_router
+from pubkeys.api import router as pubkey_router
 from django_ratelimit.exceptions import Ratelimited
 
 
 api = NinjaAPI()
-api.add_router("/users", user_router)
+api.add_router("/pubkeys", pubkey_router)
 
 
 @api.exception_handler(Ratelimited)
