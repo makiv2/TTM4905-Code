@@ -25,6 +25,8 @@ To start the entire system, execute the following command in the root directory:
 docker compose up
 ```
 
+The webpage has to be run manually, navigate to the subfolder `frontend/` for more intructions.
+
 #### Running subcomponents
 To run specific subcomponents of the system, navigate to the respective subfolder `backend/` or `rocket/` and execute the same command:
 
@@ -37,8 +39,17 @@ docker compose up
 Follow the instructions in each of the four subfolders `backend/`, `frontend/`,  `rocket/` or `sp1/` to run the system without the use of Docker. (This can be time consuming)
 
 ## Usage
+The system can be demonstrated by the use of the webpage in `frontend/` or by manually calling on the endpoints in the Rocket Backend with Postman or similar software.
 
-..........................
+Website Pages
+- 
+-
+-
+
+Rocket Endpoints
+-
+-
+-
 
 ## Contributing
 
