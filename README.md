@@ -46,9 +46,10 @@ Website Pages
 - `/generate` - To generate a complaint.
 
 Rocket Endpoints
--
--
--
+- #[post("/generate_proof" - To generate a complaint, takes in a JSON with the fields, `message: ..., signature: ..., company:...`. Implementation details can be found under `rocket/src/api/zk_api.rs`.
+- #[get("/proofs")] - Get all the complaints.
+- #[get("/proofs/<id>")] - Get complaint with a specific id.
+- #[get("/proofs/<id>/raw")] - Get complaint with the raw proof (for local verification) with a specific id.
 
 ## Contributing
 
