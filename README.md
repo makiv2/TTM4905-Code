@@ -2,17 +2,16 @@
 
 ## Description
 
-This project is aimed at...
+This project aims to develop a proof-of-concept whistleblower electronic reporting
+environment leveraging the Zero-Knowledge Virtual Machine (zkVM) SP1. By
+utilizing zkVM technology, the students will implement Zero-Knowledge Proofs
+(ZKPs) to ensure the anonymity and privacy of whistleblowers. This implementation
+on the SP1 platform will demonstrate the feasibility of secure and confidential
+whistleblowing mechanisms with zkVM. The initiative underscores the crucial role of
+such technologies in promoting transparency and protecting personal freedoms.
+More information can be found in the accompanying master's thesis.
 
-## Installation
-
-To install this project, follow these steps:
-
-1. Clone the repository.
-2. Run `npm install` to install the dependencies.
-3. ...
-
-## Usage
+## Running the System
 
 ### Option 1: Running the System with Docker
 
@@ -33,20 +32,13 @@ To run specific subcomponents of the system, navigate to the respective subfolde
 docker compose up
 ```
 
-#### Option 2: Running the System Manually without Virtualization
+### Option 2: Running the System Manually without Virtualization
 
-Follow the instructions in each of the four subfolders `backend/`, `frontend/`,  `rocket/` or `sp1/`
+Follow the instructions in each of the four subfolders `backend/`, `frontend/`,  `rocket/` or `sp1/` to run the system without the use of Docker. (This can be time consuming)
 
+## Usage
 
-
-
-
-
-To use this project, follow these steps:
-
-1. ...
-2. ...
-3. ...
+..........................
 
 ## Contributing
 
@@ -55,6 +47,7 @@ Contributions are welcome! Please follow these guidelines:
 - Fork the repository.
 - Create a new branch.
 - Make your changes.
+- Describe your changes and what they accomplish.
 - Submit a pull request.
 
 ## License
