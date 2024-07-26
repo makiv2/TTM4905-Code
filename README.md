@@ -14,6 +14,12 @@ To install this project, follow these steps:
 
 ## Usage
 
+The entire setup can be run with docker through Docker Compose.
+To run subcomponents of the system in Docker, Docker-Compose.yml files can be run within the backend/ and rocket/ subfolders:
+```bash
+docker compose up
+```
+
 To use this project, follow these steps:
 
 1. ...
