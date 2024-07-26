@@ -42,9 +42,8 @@ Follow the instructions in each of the four subfolders `backend/`, `frontend/`, 
 The system can be demonstrated by the use of the webpage in `frontend/` or by manually calling on the endpoints in the Rocket Backend with Postman or similar software.
 
 Website Pages
-- 
--
--
+- `/admin/login` - Mock login page that takes you to the admin panel to view complaints and the accompanying proofs.
+- `/generate` - To generate a complaint.
 
 Rocket Endpoints
 -
