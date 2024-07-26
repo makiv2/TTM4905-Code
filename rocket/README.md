@@ -9,7 +9,7 @@ docker compose up
 
 ## Run the Rocket backend manually
 
-### Installation
+## Installation
 
 #### Rust
 
